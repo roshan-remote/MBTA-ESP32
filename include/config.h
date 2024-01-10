@@ -36,10 +36,10 @@
 
 // white list IPs for web server connections
 
-#define WEB_LOG
+// #define WEB_LOG
 
 // WiFi  IP address 192.168.4.1
-#define WIFI_SSID "MBTA"
+#define WIFI_SSID "MBTA-ESP"
 #define WIFI_PASS "HackMeNot"
 
 // #define WEB_SERVER_CRED "YWRtaW46YWRtaW4=" // YWRtaW46YWRtaW4= = 'admin:admin' (user:password) base64 encoded

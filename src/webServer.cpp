@@ -46,6 +46,9 @@ void setWebServer(void)
 {
 #ifndef ETH_WEB
     WiFi.softAP(WIFI_SSID, WIFI_PASS, 1, true, 4);
+    debugln("Soft AP started");
+    debug("IP Address: ");
+    debugln(WiFi.softAPIP());
 #endif
     webServer.begin();
     loadConfigFile();
