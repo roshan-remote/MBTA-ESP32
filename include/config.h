@@ -10,7 +10,7 @@
     1 - Enable Serial Monitor
 */
 #define DEBUG 1
-// #define PROD
+#define PROD
 
 // Server params
 #define BTN_UP_PIN BTN_USER
@@ -40,7 +40,7 @@
 
 #define WEB_SERVER_CRED "YWRtaW46YWRtaW4=" // YWRtaW46YWRtaW4= = 'admin:admin' (user:password) base64 encoded
 
-#define LOGS_QUOTA 10
+#define LOGS_QUOTA 16
 #define MAX_LOG_LENGTH 2048
 
 #define RADIO_CMDS_DELAY 800 // Time distance between the radio commands
@@ -63,7 +63,7 @@
 #define ETH_CLENT_TIMEOUT 100
 #define BROWSER_REC_TIME 1
 
-#define READ_BUF_SIZE 2048
+#define READ_BUF_SIZE 5000
 
 #define LED_USER 12
 #define LEDG 13
