@@ -2,7 +2,6 @@
 #include "webServer.h"
 #include "config.h"
 #include "webHandler.h"
-
 #include "images/logo_L3H.h"
 #include "images/logo_MBTA.h"
 // #include "images/logo_SST.h"
@@ -17,6 +16,10 @@
 #include "web/script.h"
 #include "web/webPageStatic.h"
 #include "fileHandle.h"
+
+#ifndef ETH_WEB
+#include <WiFi.h>
+#endif
 
 extern uint16_t maxChannelSize;
 
@@ -37,8 +40,13 @@ uint32_t HTTP_req_count = 0;
 uint8_t channel = 1;
 uint32_t resetCount;
 
+uint16_t sysChannel = 2;
+
 void setWebServer(void)
 {
+#ifndef ETH_WEB
+    WiFi.softAP(WIFI_SSID, WIFI_PASS, 1, true, 4);
+#endif
     webServer.begin();
     loadConfigFile();
 }
@@ -112,7 +120,7 @@ void GetAjaxData(WiFiClient &cl)
     char ajaxBuffer[2048];
 
     sprintf(ajaxBuffer,
-            "<b><center><h3><span id='blue'>Runtime Stats @</span> %lu seconds</h3></center></b>"
+            "<b><center><h2>Run<span id='red'>Time </span> %lu seconds</h2></center></b>"
             "<h3><center><span id='green'>Radio Parameters</span></center></h3>"
             "<center><table border='2'>"
             "<tr><th>SN</th><th>Params</th><th>Value</th></tr>"
@@ -128,14 +136,9 @@ void GetAjaxData(WiFiClient &cl)
             "<tr><td>1</td><td> <span id='red'>Available Heap</span></td><td>%lu</td></tr>"
             "<tr><td>2</td><td>Total Heap Size</td><td>%lu</td></tr>"
             "<tr><td>3</td><td>Lowest Free Heap since boot</td><td>%lu</td></tr>"
-            "<tr><td>4</td><td>PSRAM Size</td><td>%lu</td></tr>"
-            "<tr><td>5</td><td>Free PSRAM Size</td><td>%lu</td></tr>"
-            "<tr><td>6</td><td>Minimum Free PSRAM </td><td>%lu</td></tr>"
-            "<tr><td>7</td><td>Max Allocated PSRAM</td><td>%lu</td></tr>"
             "</center></table><br><br",
             (millis() / 1000), radioACK, radioNACK, KASent, connect, radioServerConn, ESP.getFreeHeap(),
-            ESP.getHeapSize(), ESP.getMinFreeHeap(), ESP.getMaxAllocHeap(), ESP.getPsramSize(),
-            ESP.getFreePsram(), ESP.getMinFreePsram(), ESP.getMaxAllocPsram());
+            ESP.getHeapSize(), ESP.getMinFreeHeap(), ESP.getMaxAllocHeap());
 
     cl.write(ajaxBuffer, strlen(ajaxBuffer));
 }
@@ -162,7 +165,8 @@ void sendWebContent(WiFiClient &cl)
     cl.println("<img src=");
     cl.write(MBTA_LOGO);
     cl.println(">");
-    cl.println("<h1><center><b>Welcome to Rail<span id='red'>Net</span></b></center></h1>");
+    cl.println("<h1><center><b>Rail<span id='red'>Comm</span></b></center></h1>");
+    cl.println("<h1><center><b>Functional<span id='red'>Protoype</span></b></center></h1>");
     cl.println("<img src=");
     cl.write(L3H_LOGO);
     cl.println("></div>");
@@ -186,17 +190,24 @@ void sendWebContent(WiFiClient &cl)
     cl.println("<br><br><br><b><button id='reset' class='custom-button custom-red'>Reset</button></b>");
 
     if (completeSysList == false)
-        cl.println("<b><button id='systemList' class='custom-button'>List Systems</button></b>");
-
-    cl.println("<b><button id='subscribeRSSI' class='custom-button'>Subscribe to RSSI</button></b>");
-    cl.println("<b><button id='heartbeatStatus' class='custom-button'>Heartbeat status</button></b>");
+        cl.println("<b><button id='systemList' class='custom-button'>Read XL-200 Mission</button></b>");
+    cl.println("<br><b><button id='subscribeRSSI' class='custom-button'>Subscribe to RSSI</button></b>");
+    cl.println("<b><button id='heartbeatStatus' class='custom-button'>Heartbeat status</button></b><br>");
+    for (int i = 0; i < 4; i++)
+    {
+        cl.print("<b><button id='relay=");
+        cl.print(i);
+        cl.print("'class='custom-button'>RELAY ");
+        cl.print(i);
+        cl.println("</button></b>");
+    }
     cl.print("<br><br><br></h3><hr>");
 
     cl.println("<body onload='initPage()'>");
     cl.print("<center>");
-    cl.print("<h3><span id='green'>Fimware Version: </span> ");
+    cl.print("<h3>Firmware<span id='red'>Version</span> ");
     cl.print(FIMWARE_VER);
-    cl.print("<br>Reset Count: ");
+    cl.print("<br>Reset<span id='red'>Count</span> ");
     cl.print(resetCount);
     cl.println("</h3><hr>");
 
@@ -232,11 +243,21 @@ void sendWebContent(WiFiClient &cl)
     else
     {
         completeSysList = false;
-        cl.print("<h3><span id='green'>System Report list</span></h3>"
-                 "<b>Mission Name:</b>");
+        cl.print("<h2>Mission<span id='red'>Control</span></h2>"
+                 "<b>Mission<span id='red'>Name </span>");
         cl.print(mMissionName);
+        cl.print("<br>Total<span id='red'>Systems </span>");
+        cl.print(systemInfoSize);
+        cl.print("<br>Total<span id='red'>Channels </span>");
+        uint16_t sum = 0;
+        for (uint16_t i = 0; i < systemInfoSize; i++)
+            sum = sum + systemInfo[i].channelSize;
+        cl.print(sum);
+        cl.print("<br></b>");
+
         cl.print("<table class='transposed-table'><tr>"
-                 "<br><th>System Index</th><th>Type</th><th>ID</th><th>Short Alias</th>");
+                 //  "<br><th>System Index</th><th>Type</th><th>ID</th><th>Short Alias</th>");
+                 "<br><th>System Index</th><th>Type</th><th>Short Alias</th>");
         debugln("MAXCHAN=" + String(maxChannelSize));
         for (uint16_t i = 0; i < maxChannelSize; i++)
         {
@@ -252,12 +273,13 @@ void sendWebContent(WiFiClient &cl)
             cl.print(systemInfo[i].systemIndex);
             cl.print("</td><td>");
             cl.print(systemInfo[i].systemType);
-            cl.print("</td><td>");
-            cl.print(systemInfo[i].unitID);
+            // cl.print("</td><td>");
+            // cl.print(systemInfo[i].unitID);
 
             cl.print("</td><td><button class='custom-button' id='system=");
             cl.print(systemInfo[i].shortAlias);
-            cl.print("&channel=1'>");
+            // cl.print("&channel=1'>");
+            cl.print("'>");
             cl.print(systemInfo[i].shortAlias);
             cl.print("</button></td>");
 
@@ -279,8 +301,10 @@ void sendWebContent(WiFiClient &cl)
     }
 
     cl.println("<div id='sw_an_data'></div>");
-    cl.println("<hr><h2>Logs</h2></center>");
-    cl.println("<hr><div class='loggerBox' id='webLogger'></div><hr>");
+
+    cl.println("<hr><h3>XL-Link<span id='red'>Log</span></h3></center>");
+    cl.println("<hr><div class='loggerBox' id='webLogger'></div>");
+    cl.println("<center><button id='goToBottomBtn' onclick='goToBottom()''>Go to Bottom</button></center><hr>");
 
     cl.println("<script>");
     cl.write(webScript, strlen(webScript));
@@ -355,6 +379,19 @@ void handleAuthorizedRequest(WiFiClient &cl)
             }
             else
                 webSystemChange(value);
+            for (uint16_t i = 0; i < systemInfoSize; i++)
+            {
+                if (strcmp(systemInfo[i].shortAlias, value) == 0)
+                {
+                    sysChannel = systemInfo[i].channelSize;
+                    // debugln(value + ':' + String(sysChannel));
+                }
+            }
+        }
+        else if ((result = strstr(HTTP_req, "relay=")) != NULL)
+        {
+            parseRequest(result, ' ', value);
+            relayControl(atoi(value));
         }
         else if ((result = strstr(HTTP_req, "switch=")) != NULL)
         {
@@ -366,12 +403,12 @@ void handleAuthorizedRequest(WiFiClient &cl)
             parseRequest(result, ' ', value);
             if (strcmp(value, "up") == 0)
             {
-                channel = ++channel > maxChannelSize ? 1 : channel;
+                channel = ++channel > sysChannel ? 1 : channel;
                 webChannelChange(channel);
             }
             else if (strcmp(value, "down") == 0)
             {
-                channel = --channel <= 0 ? maxChannelSize : channel;
+                channel = --channel <= 0 ? sysChannel : channel;
                 webChannelChange(channel);
             }
             else

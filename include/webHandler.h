@@ -12,5 +12,5 @@ void handleHeartbeatStatus(void);
 void handleSystemList(void);
 void resetOPTA(void);
 void switcher(uint8_t type);
-
+void relayControl(uint8_t type);
 #endif

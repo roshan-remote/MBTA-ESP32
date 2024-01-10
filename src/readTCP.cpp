@@ -18,7 +18,10 @@ int readTCPMsg(char *msg, uint32_t len)
         debugln(msg);
         xSemaphoreGive(xserialMonMutex);
     }
+
+#ifdef WEB_LOG
     ethHandleLogs(msg, false);
+#endif
 
     DeserializationError error = deserializeJson(rriJsonRsp, msg, len);
     if (error)

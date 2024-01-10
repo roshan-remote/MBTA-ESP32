@@ -47,7 +47,9 @@ bool sendTCPMsg(JsonDocument &rriJson)
         debugln(jsonBuffer);
         xSemaphoreGive(xserialMonMutex);
     }
+#ifdef WEB_LOG
     ethHandleLogs(jsonBuffer, true);
+#endif
 
     /*Orange color to send*/
     digitalWrite(LEDG, HIGH);

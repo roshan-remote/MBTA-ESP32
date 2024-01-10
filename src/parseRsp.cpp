@@ -108,7 +108,7 @@ int parseResponse(JsonDocument &rriJsonRsp)
                 {
                     systemInfo[i].systemIndex = systemsArray[i]["System Index"];
                     systemInfo[i].systemType = systemsArray[i]["System Type"];
-                    systemInfo[i].unitID = systemsArray[i]["Unit ID"];
+                    // systemInfo[i].unitID = systemsArray[i]["Unit ID"];
                     strcpy(systemInfo[i].shortAlias, systemsArray[i]["Short System Alias"]);
                     // debugln(systemInfo[i].systemIndex);
                     // debugln(systemInfo[i].systemType);

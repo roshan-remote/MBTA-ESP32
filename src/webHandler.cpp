@@ -60,3 +60,9 @@ void switcher(uint8_t type)
         systemChange("P25CONV");
     }
 }
+
+void relayControl(uint8_t type)
+{
+    debugln("Relay Control: " + String(type));
+    // closeRelay = type;
+}

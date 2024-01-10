@@ -7,7 +7,7 @@ struct SystemInfo
 {
     int systemIndex;
     int systemType;
-    uint64_t unitID;
+    // uint64_t unitID;
     char shortAlias[32];
     char channels[32][32];
     uint16_t channelSize = 0;

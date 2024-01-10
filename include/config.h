@@ -3,14 +3,12 @@
 
 #include <Arduino.h>
 
-#define FIMWARE_VER "V2-C3-231218"
+#define FIMWARE_VER "V5"
 
 /*
     0 - Disable Serial Monitor
     1 - Enable Serial Monitor
 */
-#define DEBUG 1
-// #define PROD
 
 // Server params
 #define BTN_UP_PIN BTN_USER
@@ -38,7 +36,14 @@
 
 // white list IPs for web server connections
 
-#define WEB_SERVER_CRED "YWRtaW46YWRtaW4=" // YWRtaW46YWRtaW4= = 'admin:admin' (user:password) base64 encoded
+#define WEB_LOG
+
+// WiFi  IP address 192.168.4.1
+#define WIFI_SSID "MBTA"
+#define WIFI_PASS "HackMeNot"
+
+// #define WEB_SERVER_CRED "YWRtaW46YWRtaW4=" // YWRtaW46YWRtaW4= = 'admin:admin' (user:password) base64 encoded
+#define WEB_SERVER_CRED "UmFpbENvbW06SGFja01lTm90" // 'RailComm:HackMeNot' (user:password) base64 encoded
 
 #define LOGS_QUOTA 10
 #define MAX_LOG_LENGTH 2048
