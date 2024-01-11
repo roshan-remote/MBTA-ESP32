@@ -100,10 +100,10 @@ void readEthernet()
 
 void ethHandleLogs(const char *message, bool send)
 {
-    if (logsCounter > LOGS_QUOTA)
+    if (logsCounter >= LOGS_QUOTA)
         return;
 
-    char prefix[16] = "RX::";
+    char prefix[8] = "RX::";
     if (send)
     {
         strcpy(prefix, "TX::");

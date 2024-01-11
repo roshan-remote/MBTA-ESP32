@@ -108,7 +108,7 @@ void switchStates(int responseCode)
   case SYS_LIST:
     if (sysCount < systemInfoSize)
     {
-
+      pauseKeepAlive =true;
       if (systemInfo[sysCount].systemType == 0 || systemInfo[sysCount].systemType == 5)
         requestForConventionalFrequencySet(systemInfo[sysCount].shortAlias);
       else
@@ -117,6 +117,7 @@ void switchStates(int responseCode)
     }
     else
     {
+      pauseKeepAlive =false;
       state = LISTEN;
       sysCount = 0;
       completeSysList = true;

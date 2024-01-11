@@ -10,12 +10,10 @@
     1 - Enable Serial Monitor
 */
 
-// Server params
-#define BTN_UP_PIN BTN_USER
-#define RED_LED_PIN LEDR
+// define pinouts for button and the LED
 // const PROGMEM uint8_t BTN_DOWN_PIN = D7;
 
-// define pinouts for button and the LED
+// Server params
 #ifdef PROD
 #define ip "192.168.250.178"
 #define server "192.168.250.2"
