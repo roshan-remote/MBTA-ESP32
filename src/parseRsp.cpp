@@ -1,7 +1,7 @@
 #include "parseRsp.h"
 #include "config.h"
 
-SystemInfo systemInfo[32];
+SystemInfo systemInfo[16];
 uint16_t systemInfoSize = 0;
 uint16_t maxChannelSize = 2;
 char mMissionName[32];
@@ -119,8 +119,7 @@ int parseResponse(JsonDocument &rriJsonRsp)
                 {
                     systemInfo[i].systemIndex = systemsArray[i]["System Index"];
                     systemInfo[i].systemType = systemsArray[i]["System Type"];
-                    // systemInfo[i].unitID = systemsArray[i]["Unit ID"];
-                    strcpy(systemInfo[i].shortAlias, systemsArray[i]["Short System Alias"]);
+                    systemInfo[i].shortAlias= systemsArray[i]["Short System Alias"].as<String>();
                     // debugln(systemInfo[i].systemIndex);
                     // debugln(systemInfo[i].systemType);
                     // debugln(systemInfo[i].unitID);
@@ -152,7 +151,8 @@ int parseResponse(JsonDocument &rriJsonRsp)
                 JsonArray channelsArray = rriJsonRsp["params"]["channelsArray"].as<JsonArray>();
                 for (uint8_t j = 0; j < channelsArray.size(); j++)
                 {
-                    strcpy(systemInfo[systemInfoCounter].channels[systemInfo[systemInfoCounter].channelSize + j], channelsArray[j]["Short channel Alias"]);
+                    // strcpy(systemInfo[systemInfoCounter].channels[systemInfo[systemInfoCounter].channelSize + j], channelsArray[j]["Short channel Alias"]);
+                    systemInfo[systemInfoCounter].channels[systemInfo[systemInfoCounter].channelSize + j]= channelsArray[j]["Short channel Alias"].as<String>();
                     debug("[Channels::]" + String(systemInfoCounter) + "," + String(systemInfo[systemInfoCounter].channelSize + j) + "->");
                     debugln(systemInfo[systemInfoCounter].channels[systemInfo[systemInfoCounter].channelSize + j]);
                 }
@@ -181,7 +181,8 @@ int parseResponse(JsonDocument &rriJsonRsp)
             {
                 for (uint8_t j = 0; j < groupsArray.size(); j++)
                 {
-                    strcpy(systemInfo[systemInfoCounter].channels[systemInfo[systemInfoCounter].channelSize + j], groupsArray[j]["Short Group Alias"]);
+                    // strcpy(systemInfo[systemInfoCounter].channels[systemInfo[systemInfoCounter].channelSize + j], groupsArray[j]["Short Group Alias"]);
+                    systemInfo[systemInfoCounter].channels[systemInfo[systemInfoCounter].channelSize + j]= groupsArray[j]["Short Group Alias"].as<String>();
                     debug("[Channels::]" + String(systemInfoCounter) + "," + String(systemInfo[systemInfoCounter].channelSize + j) + "->");
                     debugln(systemInfo[systemInfoCounter].channels[systemInfo[systemInfoCounter].channelSize + j]);
                 }

@@ -109,11 +109,13 @@ void switchStates(int responseCode)
     if (sysCount < systemInfoSize)
     {
       pauseKeepAlive =true;
+      client.flush();
       if (systemInfo[sysCount].systemType == 0 || systemInfo[sysCount].systemType == 5)
-        requestForConventionalFrequencySet(systemInfo[sysCount].shortAlias);
+        requestForConventionalFrequencySet(systemInfo[sysCount].shortAlias.c_str());
       else
-        groupListReport(systemInfo[sysCount].shortAlias);
+        groupListReport(systemInfo[sysCount].shortAlias.c_str());
       sysCount++;
+      // delay(RADIO_CMDS_DELAY);
     }
     else
     {

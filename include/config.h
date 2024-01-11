@@ -34,7 +34,6 @@
 
 // white list IPs for web server connections
 
-#define WEB_LOG
 
 // WiFi  IP address 192.168.4.1
 #define WIFI_SSID "MBTA-ESP"
@@ -43,10 +42,20 @@
 // #define WEB_SERVER_CRED "YWRtaW46YWRtaW4=" // YWRtaW46YWRtaW4= = 'admin:admin' (user:password) base64 encoded
 #define WEB_SERVER_CRED "UmFpbENvbW06SGFja01lTm90" // 'RailComm:HackMeNot' (user:password) base64 encoded
 
+#define MAX_SYSTEMS 16
+
+#define WEB_LOG
+
+#ifdef WEB_LOG
 #define LOGS_QUOTA 10
 #define MAX_LOG_LENGTH 2048
+#else
+#define LOGS_QUOTA 1
+#define MAX_LOG_LENGTH 1
+#endif
 
-#define RADIO_CMDS_DELAY 800 // Time distance between the radio commands
+
+#define RADIO_CMDS_DELAY 500 // Time distance between the radio commands
 
 /*These Values are in miliseconds Used for thread sleep */
 #define KEEP_ALIVE_TIM 12000

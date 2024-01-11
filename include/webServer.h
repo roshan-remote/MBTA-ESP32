@@ -10,7 +10,7 @@ using namespace std;
 
 extern uint32_t KASent, connect, radioACK, radioNACK, radioServerConn;
 
-extern SystemInfo systemInfo[20];
+extern SystemInfo systemInfo[MAX_SYSTEMS];
 extern uint16_t systemInfoSize;
 
 void setWebServer(void);

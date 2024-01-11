@@ -36,7 +36,7 @@ bool pauseKeepAlive = false;
 bool completeSysList = false;
 uint16_t sysCount = 0;
 extern uint16_t systemInfoSize;
-extern SystemInfo systemInfo[20];
+extern SystemInfo systemInfo[MAX_SYSTEMS];
 
 // variables for EthernetClient interface and handlers
 int queue = 0;

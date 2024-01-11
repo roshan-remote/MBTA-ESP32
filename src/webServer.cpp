@@ -150,113 +150,112 @@ void sendWebContent(WiFiClient &cl)
 {
     // HTTP request for web page
     // send web page - contains JavaScript with AJAX calls
-    cl.println("<!DOCTYPE html>");
-    cl.println("<html>");
-    cl.println("<head>");
-    cl.println("<title>MBTA RailNet</title>");
-    cl.println("<link rel = 'icon' type = 'image/png' sizes = '32x32' href =");
+    cl.println(F("<!DOCTYPE html>"));
+    cl.println(F("<html>"));
+    cl.println(F("<head>"));
+    cl.println(F("<title>MBTA RailNet</title>"));
+    cl.println(F("<link rel = 'icon' type = 'image/png' sizes = '32x32' href ="));
     cl.println(FAVICON);
-    cl.println("/>");
-    cl.println("<meta name='viewport' content='width=device-width, initial-scale=1.0'/>");
+    cl.println(F("/>"));
+    cl.println(F("<meta name='viewport' content='width=device-width, initial-scale=1.0'/>"));
 
-    cl.println("<style>");
+    cl.println(F("<style>"));
     cl.write(webCSS, sizeof(webCSS));
-    cl.println("</style></head>");
+    cl.println(F("</style></head>"));
 
-    cl.println("<body><div class='header'>");
+    cl.println(F("<body><div class='header'>"));
 
-    cl.println("<img src=");
+    cl.println(F("<img src="));
     cl.write(MBTA_LOGO);
-    cl.println(">");
-    cl.println("<h1><center><b>Rail<span id='red'>Comm</span></b></center></h1>");
-    cl.println("<h1><center><b>Functional<span id='red'>Protoype</span></b></center></h1>");
-    cl.println("<img src=");
+    cl.println(F(">"));
+    cl.println(F("<h1><center><b>Rail<span id='red'>Comm</span></b></center></h1>"));
+    cl.println(F("<h1><center><b>Functional<span id='red'>Protoype</span></b></center></h1>"));
+    cl.println(F("<img src="));
     cl.write(L3H_LOGO);
-    cl.println("></div>");
+    cl.println(F("></div>"));
 
-    cl.println("<img align='right' class='mirrored' id='switch=2' src=");
+    cl.println(F("<img align='right' class='mirrored' id='switch=2' src="));
     cl.write(SWITCH_2);
-    cl.println(">");
+    cl.println(F(">"));
 
-    cl.println("<img align='right' class='mirrored' id='switch=1' src=");
+    cl.println(F("<img align='right' class='mirrored' id='switch=1' src="));
     cl.write(SWITCH_1);
-    cl.println(">");
+    cl.println(F(">"));
 
-    cl.println("<img align='right' class='t-image'  id='channel=down' src=");
+    cl.println(F("<img align='right' class='t-image'  id='channel=down' src="));
     cl.write(BUTTON_1);
-    cl.println(">");
+    cl.println(F(">"));
 
-    cl.println("<img align='right' class='t-image'  id='channel=up' src=");
+    cl.println(F("<img align='right' class='t-image'  id='channel=up' src="));
     cl.write(BUTTON_1);
-    cl.println(">");
+    cl.println(F(">"));
 
-    cl.println("<br><br><br><b><button id='reset' class='custom-button custom-red'>Reset</button></b>");
+    cl.println(F("<br><br><br><b><button id='reset' class='custom-button custom-red'>Reset</button></b>"));
 
     if (completeSysList == false)
-        cl.println("<b><button id='systemList' class='custom-button'>Read XL-200 Mission</button></b>");
-    cl.println("<br><b><button id='subscribeRSSI' class='custom-button'>Subscribe to RSSI</button></b>");
-    cl.println("<b><button id='heartbeatStatus' class='custom-button'>Heartbeat status</button></b><br>");
+        cl.println(F("<b><button id='systemList' class='custom-button'>Read XL-200 Mission</button></b>"));
+    cl.println(F("<br><b><button id='subscribeRSSI' class='custom-button'>Subscribe to RSSI</button></b>"));
+    cl.println(F("<b><button id='heartbeatStatus' class='custom-button'>Heartbeat status</button></b><br>"));
     for (int i = 0; i < 4; i++)
     {
-        cl.print("<b><button id='relay=");
+        cl.print(F("<b><button id='relay="));
         cl.print(i);
-        cl.print("'class='custom-button'>RELAY ");
+        cl.print(F("'class='custom-button'>RELAY "));
         cl.print(i);
-        cl.println("</button></b>");
+        cl.println(F("</button></b>"));
     }
-    cl.print("<br><br><br></h3><hr>");
+    cl.print(F("<br><br><br></h3><hr>"));
 
-    cl.println("<body onload='initPage()'>");
-    cl.print("<center>");
-    cl.print("<h3>Firmware<span id='red'>Version</span> ");
+    cl.println(F("<body onload='initPage()'>"));
+    cl.print(F("<center>"));
+    cl.print(F("<h3>Firmware<span id='red'>Version</span> "));
     cl.print(FIMWARE_VER);
-    cl.print("<br>Reset<span id='red'>Count</span> ");
+    cl.print(F("<br>Reset<span id='red'>Count</span> "));
     cl.print(resetCount);
-    cl.println("</h3><hr>");
+    cl.println(F("</h3><hr>"));
 
-    cl.println("<h3><span id='green'>Chip Parameters</span></h3><table border='2'>");
-    cl.print("<tr><th>SN</th><th>Params</th><th>Value</th></tr>");
-    cl.print("<tr><td>1</td><td>Flash Size</td><td>");
+    cl.println(F("<h3><span id='green'>Chip Parameters</span></h3><table border='2'>"));
+    cl.print(F("<tr><th>SN</th><th>Params</th><th>Value</th></tr>"));
+    cl.print(F("<tr><td>1</td><td>Flash Size</td><td>"));
     cl.print((ESP.getFlashChipSize() / 1024.0) / 1024.0);
-    cl.println("MB</td></tr>");
-    cl.print("<tr><td>2</td><td>Flash Speed</td><td>");
+    cl.println(F("MB</td></tr>"));
+    cl.print(F("<tr><td>2</td><td>Flash Speed</td><td>"));
     cl.print(ESP.getFlashChipSpeed() / 1000000);
-    cl.println("MHz</td></tr>");
-    cl.print("<tr><td>3</td><td>Sketch Size</td><td>");
+    cl.println(F("MHz</td></tr>"));
+    cl.print(F("<tr><td>3</td><td>Sketch Size</td><td>"));
     cl.print((ESP.getSketchSize() / 1024.0) / 1024.0);
-    cl.println("MB</td></tr>");
-    cl.print("<tr><td>4</td><td>Free Sketch Size</td><td>");
+    cl.println(F("MB</td></tr>"));
+    cl.print(F("<tr><td>4</td><td>Free Sketch Size</td><td>"));
     cl.print((ESP.getFreeSketchSpace() / 1024.0) / 1024.0);
-    cl.println("MB</td></tr>");
-    cl.print("<tr><td>5</td><td>CPU Frequency</td><td>");
+    cl.println(F("MB</td></tr>"));
+    cl.print(F("<tr><td>5</td><td>CPU Frequency</td><td>"));
     cl.print(ESP.getCpuFreqMHz());
-    cl.println("MHz</td></tr>");
-    cl.print("<tr><td>6</td><td>Chip Model</td><td>");
+    cl.println(F("MHz</td></tr>"));
+    cl.print(F("<tr><td>6</td><td>Chip Model</td><td>"));
     cl.print(ESP.getChipModel());
-    cl.println("</td></tr>");
-    cl.print("<tr><td>7</td><td>SDK version</td><td>");
+    cl.println(F("</td></tr>"));
+    cl.print(F("<tr><td>7</td><td>SDK version</td><td>"));
     cl.print(ESP.getSdkVersion());
-    cl.println("</td></tr>");
-    cl.println("</table><br>");
+    cl.println(F("</td></tr></table><br>"));
 
     if (completeSysList == false)
     {
-        cl.println("<div id='systemTable'></div>");
+        cl.println(F("<div id='systemTable'></div>"));
     }
     else
     {
         completeSysList = false;
-        cl.print("<h2>Mission<span id='red'>Control</span></h2>"
-                 "<b>Mission<span id='red'>Name </span>");
+        cl.print(F("<h2>Mission<span id='red'>Control</span></h2>"
+                 "<b>Mission<span id='red'>Name </span>"));
         cl.print(mMissionName);
-        cl.print("<br>Total<span id='red'>Systems </span>");
+        cl.print(F("<br>Total<span id='red'>Systems </span>"));
         cl.print(systemInfoSize);
-        cl.print("<br>Total<span id='red'>Channels </span>");
+        cl.print(F("<br>Total<span id='red'>Channels </span>"));
         uint16_t sum = 0;
         for (uint16_t i = 0; i < systemInfoSize; i++)
             sum = sum + systemInfo[i].channelSize;
         cl.print(sum);
-        cl.print("<br></b>");
+        cl.print(F("<br></b>"));
 
         cl.print("<table class='transposed-table'><tr>"
                  //  "<br><th>System Index</th><th>Type</th><th>ID</th><th>Short Alias</th>");
@@ -272,61 +271,61 @@ void sendWebContent(WiFiClient &cl)
 
         for (uint16_t i = 0; i < systemInfoSize; i++)
         {
-            cl.print("<tr><td>");
+            cl.print(F("<tr><td>"));
             cl.print(systemInfo[i].systemIndex);
-            cl.print("</td><td>");
+            cl.print(F("</td><td>"));
             cl.print(systemInfo[i].systemType);
             // cl.print("</td><td>");
             // cl.print(systemInfo[i].unitID);
 
-            cl.print("</td><td><button class='custom-button' id='system=");
+            cl.print(F("</td><td><button class='custom-button' id='system="));
             cl.print(systemInfo[i].shortAlias);
             // cl.print("&channel=1'>");
-            cl.print("'>");
+            cl.print(F("'>"));
             cl.print(systemInfo[i].shortAlias);
-            cl.print("</button></td>");
+            cl.print(F("</button></td>"));
 
             for (uint16_t j = 0; j < systemInfo[i].channelSize; j++) // This is for the channels data
             {
                 // debugln(systemInfo[i].channels[j]);
-                cl.print("<td>"
-                         "<button  class='custom-button' id='system=");
+                cl.print(F("<td>"
+                         "<button  class='custom-button' id='system="));
                 cl.print(systemInfo[i].shortAlias);
-                cl.print("&channel=");
+                cl.print(F("&channel="));
                 cl.print(j + 1);
-                cl.print("'>");
+                cl.print(F("'>"));
                 cl.print(systemInfo[i].channels[j]);
-                cl.print("</button></td>");
+                cl.print(F("</button></td>"));
             }
-            cl.print("</tr>");
+            cl.print(F("</tr>"));
         }
-        cl.print("</table>");
+        cl.print(F("</table>"));
     }
 
-    cl.println("<div id='sw_an_data'></div>");
+    cl.println(F("<div id='sw_an_data'></div>"));
 
-    cl.println("<hr><h3>XL-Link<span id='red'>Log</span></h3></center>");
-    cl.println("<hr><div class='loggerBox' id='webLogger'></div>");
-    cl.println("<center><button id='goToBottomBtn' onclick='goToBottom()''>Go to Bottom</button></center><hr>");
+    cl.println(F("<hr><h3>XL-Link<span id='red'>Log</span></h3></center>"));
+    cl.println(F("<hr><div class='loggerBox' id='webLogger'></div>"));
+    cl.println(F("<center><button id='goToBottomBtn' onclick='goToBottom()''>Go to Bottom</button></center><hr>"));
 
-    cl.println("<script>");
+    cl.println(F("<script>"));
     cl.write(webScript, strlen(webScript));
-    cl.println("</script>");
+    cl.println(F("</script>"));
 
-    cl.println("</body></br><div class='header'>");
-    cl.println("<h3><left><span id='red'>Thank You</span> for visiting</left></h3>");
-    cl.print("<img src=");
+    cl.println(F("</body></br><div class='header'>"));
+    cl.println(F("<h3><left><span id='red'>Thank You</span> for visiting</left></h3>"));
+    cl.print(F("<img src="));
     cl.write(SST3_LOGO);
-    cl.println(">");
-    cl.println("</html>");
+    cl.println(F(">"));
+    cl.println(F("</html>"));
 }
 
 void handleAuthorizedRequest(WiFiClient &cl)
 {
     // send a standard http response header
-    cl.println("HTTP/1.1 200 OK");
-    cl.println("Content-Type: text/html");
-    cl.println("Connection: keep-alive");
+    cl.println(F("HTTP/1.1 200 OK"));
+    cl.println(F("Content-Type: text/html"));
+    cl.println(F("Connection: keep-alive"));
     cl.println();
 
     // AJAX request for switch state
@@ -384,7 +383,7 @@ void handleAuthorizedRequest(WiFiClient &cl)
                 webSystemChange(value);
             for (uint16_t i = 0; i < systemInfoSize; i++)
             {
-                if (strcmp(systemInfo[i].shortAlias, value) == 0)
+                if (systemInfo[i].shortAlias== String(value))
                 {
                     sysChannel = systemInfo[i].channelSize;
                     // debugln(value + ':' + String(sysChannel));
@@ -448,9 +447,9 @@ void showWebPage(void)
                     handleAuthorizedRequest(webClient);
                 else
                 {
-                    webClient.println("HTTP/1.1 401 Unauthorized");
-                    webClient.println("WWW-Authenticate: Basic realm='Secure'");
-                    webClient.println("Content-Type: text/html");
+                    webClient.println(F("HTTP/1.1 401 Unauthorized"));
+                    webClient.println(F("WWW-Authenticate: Basic realm='Secure'"));
+                    webClient.println(F("Content-Type: text/html"));
                     webClient.println();
                 }
                 memset(HTTP_req, 0, sizeof(HTTP_req));
