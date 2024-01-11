@@ -36,7 +36,7 @@
 
 // white list IPs for web server connections
 
-// #define WEB_LOG
+#define WEB_LOG
 
 // WiFi  IP address 192.168.4.1
 #define WIFI_SSID "MBTA-ESP"
@@ -68,7 +68,7 @@
 #define ETH_CLENT_TIMEOUT 100
 #define BROWSER_REC_TIME 1
 
-#define READ_BUF_SIZE 2048
+#define READ_BUF_SIZE 7000
 
 #define LED_USER 12
 #define LEDG 13

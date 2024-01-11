@@ -17,7 +17,7 @@
 #include "web/webPageStatic.h"
 #include "fileHandle.h"
 
-#ifndef ETH_WEB
+#ifdef SERVE_WIFI
 #include <WiFi.h>
 #endif
 
@@ -44,7 +44,7 @@ uint16_t sysChannel = 2;
 
 void setWebServer(void)
 {
-#ifndef ETH_WEB
+#ifdef SERVE_WIFI
     WiFi.softAP(WIFI_SSID, WIFI_PASS, 1, true, 4);
     debugln("Soft AP started");
     debug("IP Address: ");

@@ -16,9 +16,7 @@ uint16_t channelID = 0;
 uint8_t disconn = 0;
 uint8_t state;
 bool pingReceived = false;
-bool panel[8] = {false};
 bool leadCar = LOW; // for lead car and remote car states
-bool ATO = LOW;     // for ato(automatic train operations) state and  bypass ato
 
 bool channelUp = false;
 bool channelDown = false;
@@ -38,12 +36,12 @@ bool pauseKeepAlive = false;
 bool completeSysList = false;
 uint16_t sysCount = 0;
 extern uint16_t systemInfoSize;
-extern SystemInfo systemInfo[16];
+extern SystemInfo systemInfo[20];
 
 // variables for EthernetClient interface and handlers
 int queue = 0;
 char readBuffer[READ_BUF_SIZE];
-extern ParsedData parsedData[4];
+extern ParsedData parsedData[3];
 
 char logsQueue[LOGS_QUOTA][MAX_LOG_LENGTH];
 uint8_t logsCounter = 0;

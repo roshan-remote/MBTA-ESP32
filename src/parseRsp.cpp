@@ -1,12 +1,14 @@
 #include "parseRsp.h"
 #include "config.h"
 
-SystemInfo systemInfo[16];
+SystemInfo systemInfo[32];
 uint16_t systemInfoSize = 0;
-uint16_t maxChannelSize = 3;
+uint16_t maxChannelSize = 2;
 char mMissionName[32];
+bool lastPacket = false;
+bool radioAck = false;
 
-uint16_t systemInfoCounter = 0;
+int systemInfoCounter = 0;
 
 // Parse a JSON response from XL -200l
 int parseResponse(JsonDocument &rriJsonRsp)
@@ -79,6 +81,15 @@ int parseResponse(JsonDocument &rriJsonRsp)
         else if (strcmp(rriJsonRsp["method"], "radioAcknowledge") == 0)
         {
             debugln("[Radio ACK::]");
+            radioAck = true;
+            if (lastPacket && radioAck)
+            {
+                debugln("Response Last packet now incrementing!!");
+                systemInfoCounter++;
+                lastPacket = false;
+                radioAck = false;
+                return SYS_LIST;
+            }
             return RADIO_ACK;
         }
         else if (strcmp(rriJsonRsp["method"], "radioNegativeAcknowledge") == 0)
@@ -119,7 +130,20 @@ int parseResponse(JsonDocument &rriJsonRsp)
                 systemInfoCounter = 0;
                 maxChannelSize = 0;
             }
-            return SYS_LIST;
+            if (rriJsonRsp["params"]["Last Packet"])
+            {
+                lastPacket = true;
+                if (lastPacket && radioAck)
+                {
+                    debugln("Response Last packet now incrementing!!");
+                    lastPacket = false;
+                    radioAck = false;
+                    return SYS_LIST;
+                }
+                else
+                    systemInfoCounter--;
+            }
+            return LISTEN;
         }
         else if (strcmp(rriJsonRsp["method"], "reportForConventionalFrequencySet") == 0)
         {
@@ -136,8 +160,15 @@ int parseResponse(JsonDocument &rriJsonRsp)
                 maxChannelSize = systemInfo[systemInfoCounter].channelSize > maxChannelSize ? systemInfo[systemInfoCounter].channelSize : maxChannelSize;
                 if (rriJsonRsp["params"]["Last Packet"])
                 {
-                    systemInfoCounter++;
-                    return SYS_LIST;
+                    lastPacket = true;
+                    if (lastPacket && radioAck)
+                    {
+                        debugln("Response Last packet now incrementing!!");
+                        systemInfoCounter++;
+                        lastPacket = false;
+                        radioAck = false;
+                        return SYS_LIST;
+                    }
                 }
             }
             return LISTEN;
@@ -158,8 +189,15 @@ int parseResponse(JsonDocument &rriJsonRsp)
                 maxChannelSize = systemInfo[systemInfoCounter].channelSize > maxChannelSize ? systemInfo[systemInfoCounter].channelSize : maxChannelSize;
                 if (rriJsonRsp["params"]["Last Packet"])
                 {
-                    systemInfoCounter++;
-                    return SYS_LIST;
+                    lastPacket = true;
+                    if (lastPacket && radioAck)
+                    {
+                        debugln("Response Last packet now incrementing!!");
+                        systemInfoCounter++;
+                        lastPacket = false;
+                        radioAck = false;
+                        return SYS_LIST;
+                    }
                 }
             }
             return LISTEN;
@@ -180,5 +218,5 @@ int parseResponse(JsonDocument &rriJsonRsp)
         debugln("[ERROR::]Error Not Defined");
         return -1;
     }
-    return DEFAULT_1;
+    return DEFAULT;
 }

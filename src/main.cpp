@@ -13,6 +13,9 @@ void setup()
   Serial.begin(115200);
 #endif
 
+  pinMode(32, OUTPUT);
+  pinMode(33, OUTPUT);
+
   // Create a mutex
   xserialMonMutex = xSemaphoreCreateMutex();
   connectServer(); // connect to the Radio server
@@ -95,10 +98,6 @@ void switchStates(int responseCode)
   case RADIO_ACK:
     /*When radio ACK is received*/
     radioACK++;
-    // digitalWrite(D0, LOW);
-    // digitalWrite(D1, LOW);
-    panel[0] = HIGH;
-    panel[1] = HIGH;
     break;
 
   case RADIO_NACK:

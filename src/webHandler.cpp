@@ -56,7 +56,6 @@ void switcher(uint8_t type)
     else if (type == 2)
     {
         debugln(F("[7.]Switch 2 request"));
-        // ATO = !ATO;
         systemChange("P25CONV");
     }
 }
@@ -64,5 +63,13 @@ void switcher(uint8_t type)
 void relayControl(uint8_t type)
 {
     debugln("Relay Control: " + String(type));
+    if (type == 0)
+        digitalWrite(32, HIGH);
+    else if (type == 1)
+        digitalWrite(33, HIGH);
+    else if (type == 2)
+        digitalWrite(32, LOW);
+    else if (type == 3)
+        digitalWrite(33, LOW);
     // closeRelay = type;
 }

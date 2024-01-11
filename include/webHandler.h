@@ -3,7 +3,6 @@
 #include <Arduino.h>
 
 extern bool leadCar;
-extern bool ATO;
 
 void webSystemChange(const char sys[]);
 void webChannelChange(uint16_t channel);
