@@ -39,9 +39,12 @@ extern uint16_t systemInfoSize;
 extern SystemInfo systemInfo[MAX_SYSTEMS];
 
 // variables for EthernetClient interface and handlers
-int queue = 0;
-char readBuffer[READ_BUF_SIZE];
-extern ParsedData parsedData[3];
+
+static QueueHandle_t ethReadQueue;
+
+// char readBuffer[READ_BUF_SIZE];
+// const static int queue = 0;
+// extern ParsedData parsedData[3];
 
 char logsQueue[LOGS_QUOTA][MAX_LOG_LENGTH];
 uint8_t logsCounter = 0;

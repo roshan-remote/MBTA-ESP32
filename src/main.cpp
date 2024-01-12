@@ -18,6 +18,10 @@ void setup()
 
   // Create a mutex
   xserialMonMutex = xSemaphoreCreateMutex();
+
+  // Create Queue
+  ethReadQueue = xQueueCreate(5, sizeof(char *));
+
   connectServer(); // connect to the Radio server
   setWebServer();  // initialise the web server
 
@@ -108,7 +112,7 @@ void switchStates(int responseCode)
   case SYS_LIST:
     if (sysCount < systemInfoSize)
     {
-      pauseKeepAlive =true;
+      pauseKeepAlive = true;
       if (systemInfo[sysCount].systemType == 0 || systemInfo[sysCount].systemType == 5)
         requestForConventionalFrequencySet(systemInfo[sysCount].shortAlias.c_str());
       else
@@ -118,7 +122,7 @@ void switchStates(int responseCode)
     }
     else
     {
-      pauseKeepAlive =false;
+      pauseKeepAlive = false;
       state = LISTEN;
       sysCount = 0;
       completeSysList = true;
@@ -131,18 +135,31 @@ void procTCPMsgTask(void *parameter)
 {
   for (;;)
   {
-    if (queue > 0)
+    char *receivedData;
+    if (xQueueReceive(ethReadQueue, &receivedData, portMAX_DELAY) == pdPASS)
     {
-      // process queue one by one
-      --queue;
-      int responseCode = readTCPMsg(parsedData[queue].parsedMsg, parsedData[queue].parselength);
-      memset(parsedData[queue].parsedMsg, 0, sizeof(parsedData[queue].parsedMsg));
+      // Process the received string
+      debugln("Processing received string:");
+      debugln(receivedData);
+
+      int responseCode = readTCPMsg(receivedData, strlen(receivedData));
       switchStates(responseCode);
-      if (!msgReceived)
-        msgReceived = true;
+
+      free(receivedData);
     }
-    else
-      msgReceived = false;
+
+    // if (queue > 0)
+    // {
+    //   // process queue one by one
+    //   --queue;
+    //   int responseCode = readTCPMsg(parsedData[queue].parsedMsg, parsedData[queue].parselength);
+    //   memset(parsedData[queue].parsedMsg, 0, sizeof(parsedData[queue].parsedMsg));
+    //   switchStates(responseCode);
+    //   if (!msgReceived)
+    //     msgReceived = true;
+    // }
+    // else
+    //   msgReceived = false;
 
     vTaskDelay(pdMS_TO_TICKS(PROCESS_TCP_TIM));
   }
@@ -216,7 +233,34 @@ void readEthTask(void *parameter) // For reading TCP msg from the radio
 {
   for (;;)
   {
-    readEthernet();
+    // readEthernet();
+    int len = client.available();
+    if (len > 0)
+    {
+      // Dynamically allocate memory for the array of characters
+      char *readBuf = (char *)malloc((len) * sizeof(char));
+      if (readBuf == NULL)
+      {
+        // Handle memory allocation failure
+        debugln("Read Buffer Memory allocation failed\n");
+      }
+      client.read((uint8_t *)readBuf, len);
+
+      // Discard the first 4 characters
+      char *adjustedBuf = readBuf + 4;
+      len -= 5;
+      if (len > 0)
+        readBuf[len] = '\0'; // Null-terminate to remove the last character
+      debugln("Processed string:");
+      debugln(adjustedBuf);
+
+      if (xQueueSend(ethReadQueue, &adjustedBuf, portMAX_DELAY) != pdPASS)
+      {
+        debugln("Queue full or error, data not stored!");
+      }
+      free(readBuf);
+      free(adjustedBuf);
+    }
     vTaskDelay(pdMS_TO_TICKS(READ_ETH_TIM));
   }
 }

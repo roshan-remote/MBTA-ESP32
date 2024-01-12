@@ -66,37 +66,37 @@ void connectServer(void)
     client.setTimeout(ETH_CLENT_TIMEOUT);
 }
 
-void readEthernet()
-{
-    while (client.available())
-    {
-        char c = client.read();
-        // debug(c);
-        if (c == '{')
-            insideBraces++;
-        if (insideBraces > 0)
-        {
-            // debug(c);
-            readBuffer[contentIndex++] = c;
-            if (c == '}')
-            {
-                insideBraces--;
-                if (insideBraces <= 0)
-                {
-                    readBuffer[contentIndex] = '\0';
-                    // add buffer to the queue
-                    strncpy(parsedData[queue].parsedMsg, readBuffer, contentIndex);
-                    parsedData[queue].parselength = contentIndex;
-                    // debugln(parsedData[queue].parsedMsg);
-                    queue++;
-                    // clear buffer
-                    memset(readBuffer, 0, sizeof(readBuffer));
-                    contentIndex = 0;
-                }
-            }
-        }
-    }
-}
+// void readEthernet()
+// {
+//     while (client.available())
+//     {
+//         char c = client.read();
+//         // debug(c);
+//         if (c == '{')
+//             insideBraces++;
+//         if (insideBraces > 0)
+//         {
+//             // debug(c);
+//             readBuffer[contentIndex++] = c;
+//             if (c == '}')
+//             {
+//                 insideBraces--;
+//                 if (insideBraces <= 0)
+//                 {
+//                     readBuffer[contentIndex] = '\0';
+//                     // add buffer to the queue
+//                     strncpy(parsedData[queue].parsedMsg, readBuffer, contentIndex);
+//                     parsedData[queue].parselength = contentIndex;
+//                     // debugln(parsedData[queue].parsedMsg);
+//                     queue++;
+//                     // clear buffer
+//                     memset(readBuffer, 0, sizeof(readBuffer));
+//                     contentIndex = 0;
+//                 }
+//             }
+//         }
+//     }
+// }
 
 void ethHandleLogs(const char *message, bool send)
 {
