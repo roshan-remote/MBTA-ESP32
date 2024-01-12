@@ -8,8 +8,8 @@ struct SystemInfo
     int systemIndex;
     int systemType;
     String shortAlias;
-    uint16_t channelSize = 0;
-    String channels[64];
+    uint16_t channelSize;
+    String* channels;
 };
 
 #endif

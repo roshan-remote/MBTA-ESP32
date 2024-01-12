@@ -42,7 +42,7 @@
 // #define WEB_SERVER_CRED "YWRtaW46YWRtaW4=" // YWRtaW46YWRtaW4= = 'admin:admin' (user:password) base64 encoded
 #define WEB_SERVER_CRED "UmFpbENvbW06SGFja01lTm90" // 'RailComm:HackMeNot' (user:password) base64 encoded
 
-#define MAX_SYSTEMS 16
+#define MAX_SYSTEMS 9
 
 #define WEB_LOG
 
@@ -53,7 +53,6 @@
 #define LOGS_QUOTA 1
 #define MAX_LOG_LENGTH 1
 #endif
-
 
 #define RADIO_CMDS_DELAY 500 // Time distance between the radio commands
 

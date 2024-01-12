@@ -109,7 +109,6 @@ void switchStates(int responseCode)
     if (sysCount < systemInfoSize)
     {
       pauseKeepAlive =true;
-      client.flush();
       if (systemInfo[sysCount].systemType == 0 || systemInfo[sysCount].systemType == 5)
         requestForConventionalFrequencySet(systemInfo[sysCount].shortAlias.c_str());
       else

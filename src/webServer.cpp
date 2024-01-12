@@ -297,6 +297,7 @@ void sendWebContent(WiFiClient &cl)
                 cl.print(systemInfo[i].channels[j]);
                 cl.print(F("</button></td>"));
             }
+            delete[] systemInfo[i].channels;
             cl.print(F("</tr>"));
         }
         cl.print(F("</table>"));

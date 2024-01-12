@@ -149,6 +149,8 @@ int parseResponse(JsonDocument &rriJsonRsp)
             if (rriJsonRsp["params"]["channelsArray"] != NULL)
             {
                 JsonArray channelsArray = rriJsonRsp["params"]["channelsArray"].as<JsonArray>();
+                systemInfo[systemInfoCounter].channels= new String[systemInfo[systemInfoCounter].channelSize+ channelsArray.size()];
+
                 for (uint8_t j = 0; j < channelsArray.size(); j++)
                 {
                     // strcpy(systemInfo[systemInfoCounter].channels[systemInfo[systemInfoCounter].channelSize + j], channelsArray[j]["Short channel Alias"]);
@@ -177,6 +179,8 @@ int parseResponse(JsonDocument &rriJsonRsp)
         else if (strcmp(rriJsonRsp["method"], "reportForSystemGroupSet") == 0)
         {
             JsonArray groupsArray = rriJsonRsp["params"]["groupsArray"].as<JsonArray>();
+            systemInfo[systemInfoCounter].channels= new String[systemInfo[systemInfoCounter].channelSize + groupsArray.size()];
+            
             if (rriJsonRsp["params"]["groupsArray"] != NULL)
             {
                 for (uint8_t j = 0; j < groupsArray.size(); j++)
@@ -186,7 +190,7 @@ int parseResponse(JsonDocument &rriJsonRsp)
                     debug("[Channels::]" + String(systemInfoCounter) + "," + String(systemInfo[systemInfoCounter].channelSize + j) + "->");
                     debugln(systemInfo[systemInfoCounter].channels[systemInfo[systemInfoCounter].channelSize + j]);
                 }
-                systemInfo[systemInfoCounter].channelSize = systemInfo[systemInfoCounter].channelSize + groupsArray.size();
+                // systemInfo[systemInfoCounter].channelSize = systemInfo[systemInfoCounter].channelSize + groupsArray.size();
                 maxChannelSize = systemInfo[systemInfoCounter].channelSize > maxChannelSize ? systemInfo[systemInfoCounter].channelSize : maxChannelSize;
                 if (rriJsonRsp["params"]["Last Packet"])
                 {
