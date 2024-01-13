@@ -15,14 +15,18 @@
 
 // Server params
 #ifdef PROD
-#define ip "192.168.250.178"
-#define server "192.168.250.2"
+#define IP "192.168.250.178"
+#define SERVER "192.168.250.2"
+#define GATEWAY "192.168.250.1"
 #define port 61001
 #else
-#define ip "192.168.10.168"
-#define server "192.168.10.140"
+#define IP "192.168.10.168"
+#define SERVER "192.168.10.140"
+#define GATEWAY "192.168.10.1"
 #define port 55555
 #endif
+
+#define SUBNET "255.255.0.0"
 
 #if DEBUG == 1
 #define debug(x) Serial.print(x)
@@ -33,7 +37,6 @@
 #endif
 
 // white list IPs for web server connections
-
 
 // WiFi  IP address 192.168.4.1
 #define WIFI_SSID "MBTA-ESP"

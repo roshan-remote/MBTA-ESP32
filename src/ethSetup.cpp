@@ -4,6 +4,8 @@
 
 IPAddress clientIp;
 IPAddress serverIp;
+IPAddress gateway;
+IPAddress subnet;
 
 static bool eth_connected = false;
 
@@ -39,16 +41,18 @@ void beginConnect()
     debugln("[1.1 ETH::]Begin Connect");
     WiFi.onEvent(WiFiEvent); // Will call WiFiEvent() from another thread.
     delay(500);
-    ETH.begin();
+    ETH.begin(1, 16, 23, 18, ETH_PHY_LAN8720, ETH_CLOCK_GPIO0_IN, false);
+
+    clientIp.fromString(IP);
+    serverIp.fromString(SERVER);
+    gateway.fromString(GATEWAY);
+    subnet.fromString(SUBNET);
+
+    ETH.config(clientIp, gateway, subnet);
 }
 
 void connectServer(void)
 {
-    clientIp.fromString(ip);
-    serverIp.fromString(server);
-
-    debugln(serverIp);
-
     beginConnect();
     while (!client.connect(serverIp, port))
     {
@@ -57,42 +61,10 @@ void connectServer(void)
         debugln(F("[1.3 ERROR::]Cannot connect to host radio/server, Retrying...."));
         delay(SERVER_CONN_TIMEOUT);
     }
-    debugln("[1.3 ETH::]Connected To: " + String(server) + ":" + String(port));
+    debugln("[1.3 ETH::]Connected To: " + String(SERVER) + ":" + String(port));
 
     client.setTimeout(ETH_CLENT_TIMEOUT);
 }
-
-// void readEthernet()
-// {
-//     while (client.available())
-//     {
-//         char c = client.read();
-//         // debug(c);
-//         if (c == '{')
-//             insideBraces++;
-//         if (insideBraces > 0)
-//         {
-//             // debug(c);
-//             readBuffer[contentIndex++] = c;
-//             if (c == '}')
-//             {
-//                 insideBraces--;
-//                 if (insideBraces <= 0)
-//                 {
-//                     readBuffer[contentIndex] = '\0';
-//                     // add buffer to the queue
-//                     strncpy(parsedData[queue].parsedMsg, readBuffer, contentIndex);
-//                     parsedData[queue].parselength = contentIndex;
-//                     // debugln(parsedData[queue].parsedMsg);
-//                     queue++;
-//                     // clear buffer
-//                     memset(readBuffer, 0, sizeof(readBuffer));
-//                     contentIndex = 0;
-//                 }
-//             }
-//         }
-//     }
-// }
 
 void ethHandleLogs(const char *message, bool send)
 {

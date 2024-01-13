@@ -331,7 +331,7 @@
                 "ESP_PLATFORM",
                 "IDF_VER=\"4.4.4\"",
                 "_GNU_SOURCE",
-                "PLATFORMIO=60111",
+                "PLATFORMIO=60113",
                 "ARDUINO_WT32_ETH01",
                 "CORE_DEBUG_LEVEL=ARDUHAL_LOG_LEVEL_VERBOSE",
                 "DEBUG",

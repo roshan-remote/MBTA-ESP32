@@ -123,7 +123,7 @@ void logger(WiFiClient &cl)
 void GetAjaxData(WiFiClient &cl)
 {
 
-    char ajaxBuffer[2048];
+    char ajaxBuffer[4092];
 
     sprintf(ajaxBuffer,
             "<b><center><h2>Run<span id='red'>Time </span> %lu seconds</h2></center></b>"
@@ -134,7 +134,7 @@ void GetAjaxData(WiFiClient &cl)
             "<tr><td>2</td><td>NACKs</td><td>%u</td></tr>"
             "<tr><td>3</td><td>TX KeepAlives</td><td>%u</td></tr>"
             "<tr><td>4</td><td>RX KeepAlives</td><td>%u</td></tr>"
-            "<tr><td>5</td><td>Radio-Server Conn</td>%u<td>lu</td></tr>"
+            "<tr><td>5</td><td>Radio-Server Conn</td><td>%u</td></tr>"
             "</center></table>"
             "<br><h3><span id='green'><center>Heap Parameters</center></span></h3>"
             "<center><table border='2'>"
@@ -147,37 +147,44 @@ void GetAjaxData(WiFiClient &cl)
             (millis() / 1000), radioACK, radioNACK, KASent, connect, radioServerConn, ESP.getFreeHeap(),
             ESP.getHeapSize(), ESP.getMinFreeHeap(), ESP.getMaxAllocHeap());
 
-    // TaskStatus_t *taskStatusArray;
-    // volatile UBaseType_t taskCount;
+    TaskStatus_t *taskStatusArray;
+    volatile UBaseType_t taskCount;
 
-    // // Allocate an array to hold the task status information
-    // taskStatusArray = (TaskStatus_t *)pvPortMalloc(sizeof(TaskStatus_t) * uxTaskGetNumberOfTasks());
-    // if (taskStatusArray != NULL)
-    // {
-    //     // Get the task status information
-    //     taskCount = uxTaskGetSystemState(taskStatusArray, uxTaskGetNumberOfTasks(), NULL);
-    //     strcat(ajaxBuffer,
-    //            "<br><h3>Task<span id='red'>Monitor</span></span></h3>"
-    //            "<table><tr><th>SN</th><th>Task</th><th>State</th><th>Priority</th>"
-    //            "<th>Stack Size</th><th>Num</th></tr>");
+    // Allocate an array to hold the task status information
+    taskStatusArray = (TaskStatus_t *)pvPortMalloc(sizeof(TaskStatus_t) * uxTaskGetNumberOfTasks());
+    if (taskStatusArray != NULL)
+    {
+        // Get the task status information
+        taskCount = uxTaskGetSystemState(taskStatusArray, uxTaskGetNumberOfTasks(), NULL);
+        strcat(ajaxBuffer,
+               "<br><h3>Task<span id='red'>Monitor</span></span></h3><table>"
+               "<tr><th>SN</th><th>Task</th><th>Task Number</th>"
+               "<th>Address</th><th>State</th><th>Priority</th>"
+               "<th>Free Stack</th><th>Runtime</th></tr>");
 
-    //     for (uint8_t i = 0; i < taskCount; i++)
-    //     {
-    //         sprintf(ajaxBuffer + strlen(ajaxBuffer),
-    //                 "<tr><td>%d</td>"
-    //                 "<td>%s</td>"
-    //                 "<td>%u</td>"
-    //                 "<td>%u</td>"
-    //                 "<td>%u</td>"
-    //                 "</tr>",
-    //                 i + 1,
-    //                 taskStatusArray[i].pcTaskName,
-    //                 taskStatusArray[i].eCurrentState,
-    //                 taskStatusArray[i].uxCurrentPriority,
-    //                 taskStatusArray[i].usStackHighWaterMark);
-    //     }
-    //     vPortFree(taskStatusArray);
-    // }
+        for (uint8_t i = 0; i < taskCount; i++)
+        {
+            sprintf(ajaxBuffer + strlen(ajaxBuffer),
+                    "<tr><td>%d</td>"
+                    "<td>%s</td>"
+                    "<td>%u</td>"
+                    "<td>%p</td>"
+                    "<td>%u</td>"
+                    "<td>%u</td>"
+                    "<td>%u</td>"
+                    "<td>%u</td>"
+                    "</tr>",
+                    i + 1,
+                    taskStatusArray[i].pcTaskName,
+                    taskStatusArray[i].xTaskNumber,
+                    taskStatusArray[i].pxStackBase,
+                    taskStatusArray[i].eCurrentState,
+                    taskStatusArray[i].uxCurrentPriority,
+                    taskStatusArray[i].usStackHighWaterMark,
+                    taskStatusArray[i].ulRunTimeCounter);
+        }
+    }
+    vPortFree(taskStatusArray);
     cl.write(ajaxBuffer, strlen(ajaxBuffer));
 }
 
@@ -340,7 +347,7 @@ void sendWebContent(WiFiClient &cl)
 
     cl.println(F("<div id='sw_an_data'></div>"));
 
-    cl.println(F("<hr><h3>XL-Link<span id='red'>Log</span></h3></center>"));
+    cl.println(F("<br><hr><h3>XL-Link<span id='red'>Log</span></h3></center>"));
     cl.println(F("<hr><div class='loggerBox' id='webLogger'></div>"));
     cl.println(F("<center><button id='goToBottomBtn' onclick='goToBottom()''>Go to Bottom</button></center><hr>"));
 
