@@ -22,7 +22,7 @@ extern char logsQueue[LOGS_QUOTA][MAX_LOG_LENGTH];
 extern uint8_t logsCounter;
 
 void connectServer(void);
-void readEthernet(void);
+// void readEthernet(void);
 void ethHandleLogs(const char *message, bool send);
 
 #endif

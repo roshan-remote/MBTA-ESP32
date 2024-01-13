@@ -6,10 +6,10 @@
 IPAddress clientIp;
 IPAddress serverIp;
 
-uint32_t insideBraces = 0;
-uint32_t contentIndex = 0;
+// uint32_t insideBraces = 0;
+// uint32_t contentIndex = 0;
 
-ParsedData parsedData[4];
+// ParsedData parsedData[4];
 
 static bool eth_connected = false;
 

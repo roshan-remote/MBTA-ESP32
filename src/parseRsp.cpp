@@ -10,6 +10,8 @@ bool radioAck = false;
 
 int systemInfoCounter = 0;
 
+
+
 // Parse a JSON response from XL -200l
 int parseResponse(JsonDocument &rriJsonRsp)
 {
@@ -149,16 +151,37 @@ int parseResponse(JsonDocument &rriJsonRsp)
             if (rriJsonRsp["params"]["channelsArray"] != NULL)
             {
                 JsonArray channelsArray = rriJsonRsp["params"]["channelsArray"].as<JsonArray>();
-                systemInfo[systemInfoCounter].channels= new String[systemInfo[systemInfoCounter].channelSize+ channelsArray.size()];
+                // systemInfo[systemInfoCounter].channels= new String[systemInfo[systemInfoCounter].channelSize+ channelsArray.size()];
+                String* newChannels = new String[systemInfo[systemInfoCounter].channelSize + channelsArray.size()];
 
-                for (uint8_t j = 0; j < channelsArray.size(); j++)
-                {
-                    // strcpy(systemInfo[systemInfoCounter].channels[systemInfo[systemInfoCounter].channelSize + j], channelsArray[j]["Short channel Alias"]);
-                    systemInfo[systemInfoCounter].channels[systemInfo[systemInfoCounter].channelSize + j]= channelsArray[j]["Short channel Alias"].as<String>();
-                    debug("[Channels::]" + String(systemInfoCounter) + "," + String(systemInfo[systemInfoCounter].channelSize + j) + "->");
-                    debugln(systemInfo[systemInfoCounter].channels[systemInfo[systemInfoCounter].channelSize + j]);
+                // Copy existing data to the new array
+                for (int i = 0; i < systemInfo[systemInfoCounter].channelSize; ++i) {
+                    newChannels[i] = systemInfo[systemInfoCounter].channels[i];
+                    debugln(systemInfo[systemInfoCounter].channels[i]);
                 }
-                systemInfo[systemInfoCounter].channelSize = systemInfo[systemInfoCounter].channelSize + channelsArray.size();
+                // Copy new data from channelsArray
+                for (int j = 0; j < channelsArray.size(); ++j)
+                {
+                    newChannels[systemInfo[systemInfoCounter].channelSize + j] = channelsArray[j]["Short channel Alias"].as<String>();
+                    debug("[Channels::]" + String(systemInfoCounter) + "," + String(systemInfo[systemInfoCounter].channelSize + j) + "->");
+                    debugln(newChannels[systemInfo[systemInfoCounter].channelSize + j]);
+                }
+
+                 // Free the old memory
+                delete[] systemInfo[systemInfoCounter].channels;
+
+                // Update the channels pointer to point to the new array
+                systemInfo[systemInfoCounter].channels = newChannels;
+
+                systemInfo[systemInfoCounter].channelSize += channelsArray.size();
+                // for (uint8_t j = 0; j < channelsArray.size(); j++)
+                // {
+                //     // strcpy(systemInfo[systemInfoCounter].channels[systemInfo[systemInfoCounter].channelSize + j], channelsArray[j]["Short channel Alias"]);
+                //     systemInfo[systemInfoCounter].channels[systemInfo[systemInfoCounter].channelSize + j]= channelsArray[j]["Short channel Alias"].as<String>();
+                //     debug("[Channels::]" + String(systemInfoCounter) + "," + String(systemInfo[systemInfoCounter].channelSize + j) + "->");
+                //     debugln(systemInfo[systemInfoCounter].channels[systemInfo[systemInfoCounter].channelSize + j]);
+                // }
+                // systemInfo[systemInfoCounter].channelSize = systemInfo[systemInfoCounter].channelSize + channelsArray.size();
                 maxChannelSize = systemInfo[systemInfoCounter].channelSize > maxChannelSize ? systemInfo[systemInfoCounter].channelSize : maxChannelSize;
                 if (rriJsonRsp["params"]["Last Packet"])
                 {
@@ -178,18 +201,38 @@ int parseResponse(JsonDocument &rriJsonRsp)
 
         else if (strcmp(rriJsonRsp["method"], "reportForSystemGroupSet") == 0)
         {
-            JsonArray groupsArray = rriJsonRsp["params"]["groupsArray"].as<JsonArray>();
-            systemInfo[systemInfoCounter].channels= new String[systemInfo[systemInfoCounter].channelSize + groupsArray.size()];
-            
             if (rriJsonRsp["params"]["groupsArray"] != NULL)
             {
-                for (uint8_t j = 0; j < groupsArray.size(); j++)
+            JsonArray groupsArray = rriJsonRsp["params"]["groupsArray"].as<JsonArray>();
+            // systemInfo[systemInfoCounter].channels= new String[systemInfo[systemInfoCounter].channelSize + groupsArray.size()];
+            String* newChannels = new String[systemInfo[systemInfoCounter].channelSize + groupsArray.size()];
+
+            // Copy existing data to the new array
+            for (int i = 0; i < systemInfo[systemInfoCounter].channelSize; ++i) {
+                newChannels[i] = systemInfo[systemInfoCounter].channels[i];
+                debugln(systemInfo[systemInfoCounter].channels[i]);
+            }
+                            // Copy new data from channelsArray
+                for (int j = 0; j < groupsArray.size(); ++j)
                 {
-                    // strcpy(systemInfo[systemInfoCounter].channels[systemInfo[systemInfoCounter].channelSize + j], groupsArray[j]["Short Group Alias"]);
-                    systemInfo[systemInfoCounter].channels[systemInfo[systemInfoCounter].channelSize + j]= groupsArray[j]["Short Group Alias"].as<String>();
+                    newChannels[systemInfo[systemInfoCounter].channelSize + j] = groupsArray[j]["Short Group Alias"].as<String>();
                     debug("[Channels::]" + String(systemInfoCounter) + "," + String(systemInfo[systemInfoCounter].channelSize + j) + "->");
-                    debugln(systemInfo[systemInfoCounter].channels[systemInfo[systemInfoCounter].channelSize + j]);
+                    debugln(newChannels[systemInfo[systemInfoCounter].channelSize + j]);
                 }
+                              // Free the old memory
+                delete[] systemInfo[systemInfoCounter].channels;
+
+                // Update the channels pointer to point to the new array
+                systemInfo[systemInfoCounter].channels = newChannels;
+
+                systemInfo[systemInfoCounter].channelSize += groupsArray.size();
+                // for (uint8_t j = 0; j < groupsArray.size(); j++)
+                // {
+                //     // strcpy(systemInfo[systemInfoCounter].channels[systemInfo[systemInfoCounter].channelSize + j], groupsArray[j]["Short Group Alias"]);
+                //     systemInfo[systemInfoCounter].channels[systemInfo[systemInfoCounter].channelSize + j]= groupsArray[j]["Short Group Alias"].as<String>();
+                //     debug("[Channels::]" + String(systemInfoCounter) + "," + String(systemInfo[systemInfoCounter].channelSize + j) + "->");
+                //     debugln(systemInfo[systemInfoCounter].channels[systemInfo[systemInfoCounter].channelSize + j]);
+                // }
                 // systemInfo[systemInfoCounter].channelSize = systemInfo[systemInfoCounter].channelSize + groupsArray.size();
                 maxChannelSize = systemInfo[systemInfoCounter].channelSize > maxChannelSize ? systemInfo[systemInfoCounter].channelSize : maxChannelSize;
                 if (rriJsonRsp["params"]["Last Packet"])

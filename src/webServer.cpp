@@ -1,3 +1,5 @@
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
 
 #include "webServer.h"
 #include "config.h"
@@ -120,6 +122,12 @@ void logger(WiFiClient &cl)
 // send the state of the switch to the web browser
 void GetAjaxData(WiFiClient &cl)
 {
+    TaskStatus_t *taskStatusArray;
+    volatile UBaseType_t taskCount, i;
+
+    // Allocate an array to hold the task status information
+    taskStatusArray = (TaskStatus_t *)pvPortMalloc(sizeof(TaskStatus_t) * uxTaskGetNumberOfTasks());
+
     char ajaxBuffer[2048];
 
     sprintf(ajaxBuffer,
@@ -143,6 +151,32 @@ void GetAjaxData(WiFiClient &cl)
             (millis() / 1000), radioACK, radioNACK, KASent, connect, radioServerConn, ESP.getFreeHeap(),
             ESP.getHeapSize(), ESP.getMinFreeHeap(), ESP.getMaxAllocHeap());
 
+    // if (taskStatusArray != NULL)
+    // {
+    //     // Get the task status information
+    //     taskCount = uxTaskGetSystemState(taskStatusArray, uxTaskGetNumberOfTasks(), NULL);
+    //     strcat(ajaxBuffer,
+    //            "<br><h3>Task<span id='red'>Monitor</span></span></h3>"
+    //            "<table><tr><th>SN</th><th>Task</th><th>Status</th><th>Priority</th>"
+    //            "<th>Stack Size</th><th>Num</th></tr>");
+
+    //     for (i = 0; i < taskCount; i++)
+    //     {
+    //         sprintf(ajaxBuffer + strlen(ajaxBuffer),
+    //                 "<tr><td>%s</td>"
+    //                 "<td>%lu</td>"
+    //                 "<td>%lu</td>"
+    //                 "<td>%d</td>"
+    //                 "<td>%lu</td>"
+    //                 "</tr>",
+    //                 i + 1,
+    //                 taskStatusArray[i].pcTaskName,
+    //                 taskStatusArray[i].xHandle,
+    //                 taskStatusArray[i].uxCurrentPriority,
+    //                 taskStatusArray[i].usStackHighWaterMark);
+    //     }
+    //     vPortFree(taskStatusArray);
+    // }
     cl.write(ajaxBuffer, strlen(ajaxBuffer));
 }
 
@@ -246,7 +280,7 @@ void sendWebContent(WiFiClient &cl)
     {
         completeSysList = false;
         cl.print(F("<h2>Mission<span id='red'>Control</span></h2>"
-                 "<b>Mission<span id='red'>Name </span>"));
+                   "<b>Mission<span id='red'>Name </span>"));
         cl.print(mMissionName);
         cl.print(F("<br>Total<span id='red'>Systems </span>"));
         cl.print(systemInfoSize);
@@ -289,7 +323,7 @@ void sendWebContent(WiFiClient &cl)
             {
                 // debugln(systemInfo[i].channels[j]);
                 cl.print(F("<td>"
-                         "<button  class='custom-button' id='system="));
+                           "<button  class='custom-button' id='system="));
                 cl.print(systemInfo[i].shortAlias);
                 cl.print(F("&channel="));
                 cl.print(j + 1);
@@ -297,7 +331,7 @@ void sendWebContent(WiFiClient &cl)
                 cl.print(systemInfo[i].channels[j]);
                 cl.print(F("</button></td>"));
             }
-            delete[] systemInfo[i].channels;
+            // delete[] systemInfo[i].channels;
             cl.print(F("</tr>"));
         }
         cl.print(F("</table>"));
@@ -384,7 +418,7 @@ void handleAuthorizedRequest(WiFiClient &cl)
                 webSystemChange(value);
             for (uint16_t i = 0; i < systemInfoSize; i++)
             {
-                if (systemInfo[i].shortAlias== String(value))
+                if (systemInfo[i].shortAlias == String(value))
                 {
                     sysChannel = systemInfo[i].channelSize;
                     // debugln(value + ':' + String(sysChannel));

@@ -31,7 +31,7 @@ uint8_t KATaskCount = 0;
 uint8_t watchDogCount = 0;
 
 bool msgReceived = false;
-bool pauseKeepAlive = false;
+bool pauseKeepAlive = true;
 
 bool completeSysList = false;
 uint16_t sysCount = 0;

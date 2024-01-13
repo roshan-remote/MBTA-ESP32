@@ -20,7 +20,7 @@ void setup()
   xserialMonMutex = xSemaphoreCreateMutex();
 
   // Create Queue
-  ethReadQueue = xQueueCreate(5, sizeof(char *));
+  ethReadQueue = xQueueCreate(3, READ_BUF_SIZE*sizeof(char));
 
   connectServer(); // connect to the Radio server
   setWebServer();  // initialise the web server
@@ -28,7 +28,7 @@ void setup()
   /*Start the necessary threads*/
   xTaskCreate(procTCPMsgTask,
               "TCPMsg",
-              4096,
+              4096*3,
               nullptr,
               1,
               nullptr);
@@ -40,7 +40,7 @@ void setup()
               nullptr);
   xTaskCreate(readEthTask,
               "ReadEth",
-              4096,
+              4096*3,
               nullptr,
               1,
               nullptr);
@@ -72,6 +72,7 @@ void switchStates(int responseCode)
 
   case VCH_OK:
     state = LISTEN;
+     pauseKeepAlive = false;
     break;
 
   case LISTEN:
@@ -135,32 +136,15 @@ void procTCPMsgTask(void *parameter)
 {
   for (;;)
   {
-    char *receivedData;
-    if (xQueueReceive(ethReadQueue, &receivedData, portMAX_DELAY) == pdPASS)
+    char receivedData[READ_BUF_SIZE];
+    if (xQueueReceive(ethReadQueue, receivedData, portMAX_DELAY) == pdPASS)
     {
-      // Process the received string
-      debugln("Processing received string:");
-      debugln(receivedData);
-
+      // Queue received string
+      // debugln("Processing received string:");
+      // debugln(receivedData);
       int responseCode = readTCPMsg(receivedData, strlen(receivedData));
       switchStates(responseCode);
-
-      free(receivedData);
     }
-
-    // if (queue > 0)
-    // {
-    //   // process queue one by one
-    //   --queue;
-    //   int responseCode = readTCPMsg(parsedData[queue].parsedMsg, parsedData[queue].parselength);
-    //   memset(parsedData[queue].parsedMsg, 0, sizeof(parsedData[queue].parsedMsg));
-    //   switchStates(responseCode);
-    //   if (!msgReceived)
-    //     msgReceived = true;
-    // }
-    // else
-    //   msgReceived = false;
-
     vTaskDelay(pdMS_TO_TICKS(PROCESS_TCP_TIM));
   }
 }
@@ -229,38 +213,78 @@ void sendKATask(void *parameter)
   }
 } // sendKATask
 
+uint16_t insideBraces =0;
+uint16_t contentIndex =0;
+
+void readEthernet()
+{
+  char readBuffer[READ_BUF_SIZE];
+    while (client.available())
+    {
+        char c = client.read();
+        // debug(c);
+        if (c == '{')
+            insideBraces++;
+        if (insideBraces > 0)
+        {
+            // debug(c);
+            readBuffer[contentIndex++] = c;
+            if (c == '}')
+            {
+                insideBraces--;
+                if (insideBraces <= 0)
+                {
+                    readBuffer[contentIndex] = '\0';
+                    if (xQueueSend(ethReadQueue, readBuffer, portMAX_DELAY) != pdPASS)
+                    {
+                      debugln("Queue full or error, data not stored!");
+                    }
+                    // clear buffer
+                    memset(readBuffer, 0, sizeof(readBuffer));
+                    contentIndex = 0;
+                }
+            }
+        }
+    }
+}
+
 void readEthTask(void *parameter) // For reading TCP msg from the radio
 {
   for (;;)
   {
-    // readEthernet();
-    int len = client.available();
-    if (len > 0)
-    {
-      // Dynamically allocate memory for the array of characters
-      char *readBuf = (char *)malloc((len) * sizeof(char));
-      if (readBuf == NULL)
-      {
-        // Handle memory allocation failure
-        debugln("Read Buffer Memory allocation failed\n");
-      }
-      client.read((uint8_t *)readBuf, len);
-
-      // Discard the first 4 characters
-      char *adjustedBuf = readBuf + 4;
-      len -= 5;
-      if (len > 0)
-        readBuf[len] = '\0'; // Null-terminate to remove the last character
-      debugln("Processed string:");
-      debugln(adjustedBuf);
-
-      if (xQueueSend(ethReadQueue, &adjustedBuf, portMAX_DELAY) != pdPASS)
-      {
-        debugln("Queue full or error, data not stored!");
-      }
-      free(readBuf);
-      free(adjustedBuf);
-    }
+     readEthernet();
+    // int len = client.available();
+    // if (len > 0)
+    // {
+    //   debugln(len);
+    //   char *readBuf = (char *)malloc((len + 1) * sizeof(char));
+    //   if (readBuf == NULL)
+    //   {
+    //     debugln("Read Buffer Memory allocation failed");
+    //   }
+    //   client.read((uint8_t *)readBuf, len);      
+    //   for (size_t i = 0; i < len; ++i)
+    //   {
+    //     debug((readBuf[i]));
+    //   }
+    //   uint8_t skipBytes =4;//Discard the first 4 characters because radio is sending headers
+    //   if (firstMsg)
+    //   {
+    //     skipBytes =14;
+    //     firstMsg = false;
+    //   }
+    //   char *adjustedBuf = readBuf + skipBytes;
+    //   len -= skipBytes;
+    //   if (len > 0)
+    //     adjustedBuf[len] = '\0'; // Null-terminate to remove the last character
+    //   debugln("\nProcessed string:");
+    //   debugln(adjustedBuf);
+    //   if (xQueueSend(ethReadQueue, adjustedBuf, portMAX_DELAY) != pdPASS)
+    //   {
+    //     debugln("Queue full or error, data not stored!");
+    //   }
+    //   free(readBuf);
+    // }
     vTaskDelay(pdMS_TO_TICKS(READ_ETH_TIM));
   }
 }
