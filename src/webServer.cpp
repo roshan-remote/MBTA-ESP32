@@ -9,9 +9,9 @@
 // #include "images/logo_SST.h"
 // #include "images/logo_SST2.h"
 #include "images/logo_SST3.h"
-// #include "images/button_1.h"
-// #include "images/switch_1.h"
-// #include "images/switch_2.h"
+#include "images/button_1.h"
+#include "images/switch_1.h"
+#include "images/switch_2.h"
 #include "images/favicon.h"
 
 #include "web/css.h"
@@ -122,11 +122,6 @@ void logger(WiFiClient &cl)
 // send the state of the switch to the web browser
 void GetAjaxData(WiFiClient &cl)
 {
-    TaskStatus_t *taskStatusArray;
-    volatile UBaseType_t taskCount, i;
-
-    // Allocate an array to hold the task status information
-    taskStatusArray = (TaskStatus_t *)pvPortMalloc(sizeof(TaskStatus_t) * uxTaskGetNumberOfTasks());
 
     char ajaxBuffer[2048];
 
@@ -152,32 +147,37 @@ void GetAjaxData(WiFiClient &cl)
             (millis() / 1000), radioACK, radioNACK, KASent, connect, radioServerConn, ESP.getFreeHeap(),
             ESP.getHeapSize(), ESP.getMinFreeHeap(), ESP.getMaxAllocHeap());
 
-    if (taskStatusArray != NULL)
-    {
-        // Get the task status information
-        taskCount = uxTaskGetSystemState(taskStatusArray, uxTaskGetNumberOfTasks(), NULL);
-        strcat(ajaxBuffer,
-               "<br><h3>Task<span id='red'>Monitor</span></span></h3>"
-               "<table><tr><th>SN</th><th>Task</th><th>State</th><th>Priority</th>"
-               "<th>Stack Size</th><th>Num</th></tr>");
+    // TaskStatus_t *taskStatusArray;
+    // volatile UBaseType_t taskCount;
 
-        for (i = 0; i < taskCount; i++)
-        {
-            sprintf(ajaxBuffer + strlen(ajaxBuffer),
-                    "<tr><td>%d</td>"
-                    "<td>%s</td>"
-                    "<td>%u</td>"
-                    "<td>%u</td>"
-                    "<td>%u</td>"
-                    "</tr>",
-                    i + 1,
-                    taskStatusArray[i].pcTaskName,
-                    taskStatusArray[i].eCurrentState,
-                    taskStatusArray[i].uxCurrentPriority,
-                    taskStatusArray[i].usStackHighWaterMark);
-        }
-        vPortFree(taskStatusArray);
-    }
+    // // Allocate an array to hold the task status information
+    // taskStatusArray = (TaskStatus_t *)pvPortMalloc(sizeof(TaskStatus_t) * uxTaskGetNumberOfTasks());
+    // if (taskStatusArray != NULL)
+    // {
+    //     // Get the task status information
+    //     taskCount = uxTaskGetSystemState(taskStatusArray, uxTaskGetNumberOfTasks(), NULL);
+    //     strcat(ajaxBuffer,
+    //            "<br><h3>Task<span id='red'>Monitor</span></span></h3>"
+    //            "<table><tr><th>SN</th><th>Task</th><th>State</th><th>Priority</th>"
+    //            "<th>Stack Size</th><th>Num</th></tr>");
+
+    //     for (uint8_t i = 0; i < taskCount; i++)
+    //     {
+    //         sprintf(ajaxBuffer + strlen(ajaxBuffer),
+    //                 "<tr><td>%d</td>"
+    //                 "<td>%s</td>"
+    //                 "<td>%u</td>"
+    //                 "<td>%u</td>"
+    //                 "<td>%u</td>"
+    //                 "</tr>",
+    //                 i + 1,
+    //                 taskStatusArray[i].pcTaskName,
+    //                 taskStatusArray[i].eCurrentState,
+    //                 taskStatusArray[i].uxCurrentPriority,
+    //                 taskStatusArray[i].usStackHighWaterMark);
+    //     }
+    //     vPortFree(taskStatusArray);
+    // }
     cl.write(ajaxBuffer, strlen(ajaxBuffer));
 }
 
@@ -209,21 +209,21 @@ void sendWebContent(WiFiClient &cl)
     cl.write(L3H_LOGO);
     cl.println(F("></div>"));
 
-    // cl.println(F("<img align='right' class='mirrored' id='switch=2' src="));
-    // cl.write(SWITCH_2);
-    // cl.println(F(">"));
+    cl.println(F("<img align='right' class='mirrored' id='switch=2' src="));
+    cl.write(SWITCH_2);
+    cl.println(F(">"));
 
-    // cl.println(F("<img align='right' class='mirrored' id='switch=1' src="));
-    // cl.write(SWITCH_1);
-    // cl.println(F(">"));
+    cl.println(F("<img align='right' class='mirrored' id='switch=1' src="));
+    cl.write(SWITCH_1);
+    cl.println(F(">"));
 
-    // cl.println(F("<img align='right' class='t-image'  id='channel=down' src="));
-    // cl.write(BUTTON_1);
-    // cl.println(F(">"));
+    cl.println(F("<img align='right' class='t-image'  id='channel=down' src="));
+    cl.write(BUTTON_1);
+    cl.println(F(">"));
 
-    // cl.println(F("<img align='right' class='t-image'  id='channel=up' src="));
-    // cl.write(BUTTON_1);
-    // cl.println(F(">"));
+    cl.println(F("<img align='right' class='t-image'  id='channel=up' src="));
+    cl.write(BUTTON_1);
+    cl.println(F(">"));
 
     cl.println(F("<br><br><br><b><button id='reset' class='custom-button custom-red'>Reset</button></b>"));
 

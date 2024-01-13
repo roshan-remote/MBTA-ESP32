@@ -1,15 +1,9 @@
 #include "ethSetup.h"
 #include "config.h"
-
 #include "Arduino.h"
 
 IPAddress clientIp;
 IPAddress serverIp;
-
-// uint32_t insideBraces = 0;
-// uint32_t contentIndex = 0;
-
-// ParsedData parsedData[4];
 
 static bool eth_connected = false;
 
@@ -19,20 +13,20 @@ void WiFiEvent(WiFiEvent_t event)
     switch (event)
     {
     case ARDUINO_EVENT_ETH_START:
-        Serial.println("ETH Started");
+        debugln("ETH Started");
         // The hostname must be set after the interface is started, but needs
         // to be set before DHCP, so set it from the event handler thread.
         ETH.setHostname("esp32-ethernet");
         break;
     case ARDUINO_EVENT_ETH_CONNECTED:
-        Serial.println("ETH Connected");
+        debugln("ETH Connected");
         break;
     case ARDUINO_EVENT_ETH_DISCONNECTED:
-        Serial.println("ETH Disconnected");
+        debugln("ETH Disconnected");
         eth_connected = false;
         break;
     case ARDUINO_EVENT_ETH_STOP:
-        Serial.println("ETH Stopped");
+        debugln("ETH Stopped");
         eth_connected = false;
         break;
     default:
@@ -43,8 +37,8 @@ void WiFiEvent(WiFiEvent_t event)
 void beginConnect()
 {
     debugln("[1.1 ETH::]Begin Connect");
-    delay(2000);
     WiFi.onEvent(WiFiEvent); // Will call WiFiEvent() from another thread.
+    delay(500);
     ETH.begin();
 }
 
@@ -52,6 +46,8 @@ void connectServer(void)
 {
     clientIp.fromString(ip);
     serverIp.fromString(server);
+
+    debugln(serverIp);
 
     beginConnect();
     while (!client.connect(serverIp, port))
