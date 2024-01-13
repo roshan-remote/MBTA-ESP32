@@ -41,8 +41,11 @@ void beginConnect()
     debugln("[1.1 ETH::]Begin Connect");
     WiFi.onEvent(WiFiEvent); // Will call WiFiEvent() from another thread.
     delay(500);
+#ifdef PROD
+    ETH.begin();
+#else
     ETH.begin(1, 16, 23, 18, ETH_PHY_LAN8720, ETH_CLOCK_GPIO0_IN, false);
-
+#endif
     clientIp.fromString(IP);
     serverIp.fromString(SERVER);
     gateway.fromString(GATEWAY);
