@@ -20,7 +20,7 @@
 #define GATEWAY "192.168.250.1"
 #define port 61001
 #else
-#define IP "192.168.10.168"
+#define IP "192.168.10.178"
 #define SERVER "192.168.10.140"
 #define GATEWAY "192.168.10.1"
 #define port 55555
