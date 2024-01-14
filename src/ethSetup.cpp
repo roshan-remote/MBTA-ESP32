@@ -42,7 +42,7 @@ void beginConnect()
     WiFi.onEvent(WiFiEvent); // Will call WiFiEvent() from another thread.
     delay(500);
 #ifdef PROD
-    ETH.begin();
+    ETH.begin(0, -1, 23, 18, ETH_PHY_LAN8720, ETH_CLOCK_GPIO0_IN, false);
 #else
     ETH.begin(1, 16, 23, 18, ETH_PHY_LAN8720, ETH_CLOCK_GPIO0_IN, false);
 #endif
@@ -69,6 +69,7 @@ void connectServer(void)
     client.setTimeout(ETH_CLENT_TIMEOUT);
 }
 
+#ifdef WEB_LOG
 void ethHandleLogs(const char *message, bool send)
 {
     if (logsCounter >= LOGS_QUOTA)
@@ -83,3 +84,4 @@ void ethHandleLogs(const char *message, bool send)
     snprintf(logsQueue[logsCounter], MAX_LOG_LENGTH, "%u -> %s %s", currentTime, prefix, message);
     logsCounter++;
 }
+#endif

@@ -45,7 +45,7 @@
 // #define WEB_SERVER_CRED "YWRtaW46YWRtaW4=" // YWRtaW46YWRtaW4= = 'admin:admin' (user:password) base64 encoded
 #define WEB_SERVER_CRED "UmFpbENvbW06SGFja01lTm90" // 'RailComm:HackMeNot' (user:password) base64 encoded
 
-#define MAX_SYSTEMS 9
+#define MAX_SYSTEMS 16
 
 #define WEB_LOG
 
@@ -66,8 +66,8 @@
 #define PROCESS_TCP_TIM 250
 #define PANEL_TIM 250
 
-#define READ_ETH_TIM 50
-#define WEB_SERVE_TIM 50
+#define READ_ETH_TIM 100
+#define WEB_SERVE_TIM 100
 
 /*These Values are in Miliseconds used for other purposes */
 #define DEBOUNCE_TIME 500

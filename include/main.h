@@ -28,7 +28,7 @@ uint32_t radioNACK = 0;
 uint32_t radioServerConn = 0;
 
 uint8_t KATaskCount = 0;
-uint8_t watchDogCount = 0;
+uint8_t watchDogCount = 1;
 
 bool msgReceived = false;
 bool pauseKeepAlive = true;
@@ -38,18 +38,10 @@ uint16_t sysCount = 0;
 extern uint16_t systemInfoSize;
 extern SystemInfo systemInfo[MAX_SYSTEMS];
 
-// variables for EthernetClient interface and handlers
-
 static QueueHandle_t ethReadQueue;
-
-// char readBuffer[READ_BUF_SIZE];
-// const static int queue = 0;
-// extern ParsedData parsedData[3];
 
 char logsQueue[LOGS_QUOTA][MAX_LOG_LENGTH];
 uint8_t logsCounter = 0;
-
-// Mutex serialMonMutex, ethClientMutex;
 
 SemaphoreHandle_t xserialMonMutex; // Declare a mutex variable
 

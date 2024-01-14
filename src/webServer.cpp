@@ -33,7 +33,7 @@ extern uint8_t logsCounter;
 extern bool completeSysList;
 extern char mMissionName[64];
 
-const uint32_t MAX_REQUEST_SIZE = 1024;
+const uint32_t MAX_REQUEST_SIZE = 2048;
 char HTTP_req[MAX_REQUEST_SIZE] = "";
 
 uint32_t HTTP_req_count = 0;
@@ -129,7 +129,7 @@ void GetAjaxData(WiFiClient &cl)
             "<b><center><h2>Run<span id='red'>Time </span> %lu seconds</h2></center></b>"
             "<h3><center><span id='green'>Radio Parameters</span></center></h3>"
             "<center><table border='2'>"
-            "<tr><th>SN</th><th>Params</th><th>Value</th></tr>"
+            "<tr><th>SN</th><th>Params</th><th>Count</th></tr>"
             "<tr><td>1</td><td>ACKs</td><td>%u</td></tr>"
             "<tr><td>2</td><td>NACKs</td><td>%u</td></tr>"
             "<tr><td>3</td><td>TX KeepAlives</td><td>%u</td></tr>"
@@ -138,14 +138,14 @@ void GetAjaxData(WiFiClient &cl)
             "</center></table>"
             "<br><h3><span id='green'><center>Heap Parameters</center></span></h3>"
             "<center><table border='2'>"
-            "<tr><th>SN</th><th>Params</th><th>Value</th></tr>"
-            "<tr><td>1</td><td> <span id='red'>Available Heap</span></td><td>%u</td></tr>"
-            "<tr><td>2</td><td>Total Heap Size</td><td>%u</td></tr>"
-            "<tr><td>3</td><td>Lowest Free Heap since boot</td><td>%u</td></tr>"
-            "<tr><td>3</td><td>Max Free Heap since boot</td><td>%u</td></tr>"
+            "<tr><th>SN</th><th>Params</th><th>Size (KB)</th></tr>"
+            "<tr><td>1</td><td> <span id='red'>Available Heap</span></td><td>%lf</td></tr>"
+            "<tr><td>2</td><td>Total Heap Size</td><td>%lf</td></tr>"
+            "<tr><td>3</td><td>Lowest Free Heap since boot</td><td>%lf</td></tr>"
+            "<tr><td>3</td><td>Max Free Heap since boot</td><td>%lf</td></tr>"
             "</center></table><br><br",
-            (millis() / 1000), radioACK, radioNACK, KASent, connect, radioServerConn, ESP.getFreeHeap(),
-            ESP.getHeapSize(), ESP.getMinFreeHeap(), ESP.getMaxAllocHeap());
+            (millis() / 1000), radioACK, radioNACK, KASent, connect, radioServerConn, ((ESP.getFreeHeap() / 1024.0)),
+            ((ESP.getHeapSize() / 1024.0)), ((ESP.getMinFreeHeap() / 1024.0)), ((ESP.getMaxAllocHeap() / 1024.0)));
 
     TaskStatus_t *taskStatusArray;
     volatile UBaseType_t taskCount;
@@ -158,9 +158,9 @@ void GetAjaxData(WiFiClient &cl)
         taskCount = uxTaskGetSystemState(taskStatusArray, uxTaskGetNumberOfTasks(), NULL);
         strcat(ajaxBuffer,
                "<br><h3>Task<span id='red'>Monitor</span></span></h3><table>"
-               "<tr><th>SN</th><th>Task</th><th>Task Number</th>"
+               "<tr><th>SN</th><th>Task</th><th>Task ID</th>"
                "<th>Address</th><th>State</th><th>Priority</th>"
-               "<th>Free Stack</th><th>Runtime</th></tr>");
+               "<th>Free Stack</th><th>Runtime Count</th></tr>");
 
         for (uint8_t i = 0; i < taskCount; i++)
         {
@@ -300,7 +300,6 @@ void sendWebContent(WiFiClient &cl)
         cl.print(F("<br></b>"));
 
         cl.print("<table class='transposed-table'><tr>"
-                 //  "<br><th>System Index</th><th>Type</th><th>ID</th><th>Short Alias</th>");
                  "<br><th>System Index</th><th>Type</th><th>Short Alias</th>");
         debugln("MAXCHAN=" + String(maxChannelSize));
         for (uint16_t i = 0; i < maxChannelSize; i++)
@@ -317,12 +316,9 @@ void sendWebContent(WiFiClient &cl)
             cl.print(systemInfo[i].systemIndex);
             cl.print(F("</td><td>"));
             cl.print(systemInfo[i].systemType);
-            // cl.print("</td><td>");
-            // cl.print(systemInfo[i].unitID);
 
             cl.print(F("</td><td><button class='custom-button' id='system="));
             cl.print(systemInfo[i].shortAlias);
-            // cl.print("&channel=1'>");
             cl.print(F("'>"));
             cl.print(systemInfo[i].shortAlias);
             cl.print(F("</button></td>"));
@@ -339,7 +335,6 @@ void sendWebContent(WiFiClient &cl)
                 cl.print(systemInfo[i].channels[j]);
                 cl.print(F("</button></td>"));
             }
-            // delete[] systemInfo[i].channels;
             cl.print(F("</tr>"));
         }
         cl.print(F("</table>"));
