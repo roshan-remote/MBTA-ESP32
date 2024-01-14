@@ -7,6 +7,9 @@ IPAddress serverIp;
 IPAddress gateway;
 IPAddress subnet;
 
+uint32_t insideBraces = 0;
+uint32_t contentIndex = 0;
+extern QueueHandle_t ethReadQueue;
 static bool eth_connected = false;
 
 // WARNING: WiFiEvent is called from a separate FreeRTOS task (thread)!
@@ -67,6 +70,38 @@ void connectServer(void)
     debugln("[1.3 ETH::]Connected To: " + String(SERVER) + ":" + String(port));
 
     client.setTimeout(ETH_CLENT_TIMEOUT);
+}
+
+void readEthernet()
+{
+    char readBuffer[READ_BUF_SIZE];
+    while (client.available())
+    {
+        char c = client.read();
+        // debug(c);
+        if (c == '{')
+            insideBraces++;
+        if (insideBraces > 0)
+        {
+            // debug(c);
+            readBuffer[contentIndex++] = c;
+            if (c == '}')
+            {
+                insideBraces--;
+                if (insideBraces <= 0)
+                {
+                    readBuffer[contentIndex] = '\0';
+                    if (xQueueSend(ethReadQueue, readBuffer, portMAX_DELAY) != pdPASS)
+                    {
+                        debugln("Queue full or error, data not stored!");
+                    }
+                    // clear buffer
+                    memset(readBuffer, 0, sizeof(readBuffer));
+                    contentIndex = 0;
+                }
+            }
+        }
+    }
 }
 
 #ifdef WEB_LOG

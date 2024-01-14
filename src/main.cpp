@@ -215,37 +215,6 @@ void sendKATask(void *parameter)
   }
 } // sendKATask
 
-void readEthernet()
-{
-  uint16_t insideBraces = 0;
-  uint16_t contentIndex = 0;
-  char readBuffer[READ_BUF_SIZE];
-  while (client.available())
-  {
-    char c = client.read();
-    // debug(c);
-    if (c == '{')
-      insideBraces++;
-    if (insideBraces > 0)
-    {
-      // debug(c);
-      readBuffer[contentIndex++] = c;
-      if (c == '}')
-      {
-        insideBraces--;
-        if (insideBraces <= 0)
-        {
-          readBuffer[contentIndex] = '\0';
-          if (xQueueSend(ethReadQueue, readBuffer, portMAX_DELAY) != pdPASS)
-          {
-            debugln("Queue full or error, data not stored!");
-          }
-        }
-      }
-    }
-  }
-}
-
 void readEthTask(void *parameter) // For reading TCP msg from the radio
 {
   for (;;)

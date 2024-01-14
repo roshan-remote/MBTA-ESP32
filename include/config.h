@@ -66,8 +66,8 @@
 #define PROCESS_TCP_TIM 250
 #define PANEL_TIM 250
 
-#define READ_ETH_TIM 100
-#define WEB_SERVE_TIM 100
+#define READ_ETH_TIM 50
+#define WEB_SERVE_TIM 50
 
 /*These Values are in Miliseconds used for other purposes */
 #define DEBOUNCE_TIME 500

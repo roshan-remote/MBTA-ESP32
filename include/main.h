@@ -38,7 +38,7 @@ uint16_t sysCount = 0;
 extern uint16_t systemInfoSize;
 extern SystemInfo systemInfo[MAX_SYSTEMS];
 
-static QueueHandle_t ethReadQueue;
+QueueHandle_t ethReadQueue;
 
 char logsQueue[LOGS_QUOTA][MAX_LOG_LENGTH];
 uint8_t logsCounter = 0;
