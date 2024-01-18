@@ -16,6 +16,7 @@ table {
 border-collapse: collapse;
 width: 50%;
 border: 2px solid #ccc;
+margin: 0 auto;
 }
 
 th,
@@ -86,6 +87,7 @@ background-color: green;
 
 .transposed-table {
 writing-mode: vertical-lr;
+margin: 0 auto;
 }
 
 .transposed-table th, .transposed-table td {

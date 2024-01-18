@@ -108,7 +108,7 @@ void showSystemReport(WiFiClient &cl)
     cl.print(" <div class='spinner-2'>Loading...</div>");
 }
 
-// logging data to the browser
+/********************************* Logging data to the browser *********************************/
 void logger(WiFiClient &cl)
 {
     for (uint8_t i = 0; i < logsCounter; i++)
@@ -119,7 +119,7 @@ void logger(WiFiClient &cl)
     logsCounter = 0;
 }
 
-// send the state of the switch to the web browser
+/*********************************Update Parameters in Web page *********************************/
 void GetAjaxData(WiFiClient &cl)
 {
 
@@ -127,7 +127,6 @@ void GetAjaxData(WiFiClient &cl)
 
     sprintf(ajaxBuffer,
             "<b><center><h2>Run<span id='red'>Time </span> %lu seconds</h2></center></b>"
-
 
             "<h3><center>XL-LINK<span id='red'>Monitor</span></span></center></h3>"
             "<center><table border='2'>"
@@ -140,7 +139,6 @@ void GetAjaxData(WiFiClient &cl)
             "</center></table>"
 
             "<br><h3><center>Heap<span id='red'>Monitor</span></span></center></h3>"
-      //      "<br><h3><span id='green'><center>Heap Parameters</center></span></h3>"
             "<center><table border='2'>"
             "<tr><th>SN</th><th>Params</th><th>Size (KB)</th></tr>"
             "<tr><td>1</td><td> <span id='red'>Available Heap</span></td><td>%lf</td></tr>"
@@ -191,11 +189,11 @@ void GetAjaxData(WiFiClient &cl)
     vPortFree(taskStatusArray);
     cl.write(ajaxBuffer, strlen(ajaxBuffer));
 }
+/**************************************************************************************************/
 
 void sendWebContent(WiFiClient &cl)
 {
     // HTTP request for web page
-    // send web page - contains JavaScript with AJAX calls
     cl.println(F("<!DOCTYPE html>"));
     cl.println(F("<html>"));
     cl.println(F("<head>"));
@@ -211,6 +209,7 @@ void sendWebContent(WiFiClient &cl)
 
     cl.println(F("<body><div class='header'>"));
 
+    /*********************************Show Hardware Simulated Buttons *********************************/
     cl.println(F("<img src="));
     cl.write(MBTA_LOGO);
     cl.println(F(">"));
@@ -219,7 +218,6 @@ void sendWebContent(WiFiClient &cl)
     cl.println(F("<img src="));
     cl.write(L3H_LOGO);
     cl.println(F("></div>"));
-
     cl.println(F("<img align='right' class='mirrored' id='switch=2' src="));
     cl.write(SWITCH_2);
     cl.println(F(">"));
@@ -235,6 +233,7 @@ void sendWebContent(WiFiClient &cl)
     cl.println(F("<img align='right' class='t-image'  id='channel=up' src="));
     cl.write(BUTTON_1);
     cl.println(F(">"));
+    /***********************************************************************************************/
 
     cl.println(F("<br><br><br><b><button id='reset' class='custom-button custom-red'>Reset</button></b>"));
 
@@ -252,7 +251,7 @@ void sendWebContent(WiFiClient &cl)
     }
     cl.print(F("<br><br><br></h3><hr>"));
 
-//*******************************************************************************************
+    /**********************************Fimware ver and Reset *********************************/
     cl.println(F("<body onload='initPage()'>"));
     cl.print(F("<center>"));
     cl.print(F("<h3>Firmware<span id='red'>Version</span> "));
@@ -261,13 +260,15 @@ void sendWebContent(WiFiClient &cl)
     cl.print(resetCount);
     cl.println(F("</h3><hr>"));
 
-//*******************************************************************************************
+    /*******************************************************************************************/
     if (completeSysList == false)
     {
         cl.println(F("<div id='systemTable'></div>"));
     }
     else
     {
+
+        /*********************************Show Systems Info and Channels **********************/
         completeSysList = false;
         cl.print(F("<h2>Mission<span id='red'>Control</span></h2>"
                    "<b>Mission<span id='red'>Name </span>"));
@@ -322,9 +323,7 @@ void sendWebContent(WiFiClient &cl)
         cl.print(F("</table>"));
     }
 
-    //*******************************************************************************************
-
-    
+    /*************************************** Show ESP32 Chip Parameter ****************************/
     cl.println(F("<h3>Build<span id='red'>Paramters</span></span></h3><table border='2'>"));
     cl.print(F("<tr><th>SN</th><th>Params</th><th>Value</th></tr>"));
     cl.print(F("<tr><td>1</td><td>Flash Size</td><td>"));
@@ -348,8 +347,7 @@ void sendWebContent(WiFiClient &cl)
     cl.print(F("<tr><td>7</td><td>SDK version</td><td>"));
     cl.print(ESP.getSdkVersion());
     cl.println(F("</td></tr></table><br>"));
-//*******************************************************************************************
-
+    /*******************************************************************************************/
 
     cl.println(F("<div id='sw_an_data'></div>"));
 
@@ -369,6 +367,7 @@ void sendWebContent(WiFiClient &cl)
     cl.println(F("</html>"));
 }
 
+/*************Handling Button request and Requests*************/
 void handleAuthorizedRequest(WiFiClient &cl)
 {
     // send a standard http response header
@@ -377,7 +376,7 @@ void handleAuthorizedRequest(WiFiClient &cl)
     cl.println(F("Connection: keep-alive"));
     cl.println();
 
-    // AJAX request for switch state
+    // AJAX request for update real time parameters
     if (strstr(HTTP_req, "ajax_switch") != NULL)
     {
         if (completeSysList)
@@ -390,26 +389,30 @@ void handleAuthorizedRequest(WiFiClient &cl)
         }
     }
 
+    // sending serial logs to web terminal
     else if (strstr(HTTP_req, "web_logger") != NULL)
     {
         logger(cl);
     }
-
+    // System list request btn press
     else if (strstr(HTTP_req, "systemList") != NULL)
     {
         handleSystemList();
         showSystemReport(cl);
     }
+    // On reset btn press
     else if (strstr(HTTP_req, "reset") != NULL)
     {
         resetCount++;
         saveConfigFile();
         resetOPTA();
     }
+    // On subscribeRSSI btn press
     else if (strstr(HTTP_req, "subscribeRSSI") != NULL)
     {
         handleSubscribeRSSI();
     }
+    // On heartbeatStatus btn press
     else if (strstr(HTTP_req, "heartbeatStatus") != NULL)
     {
         handleHeartbeatStatus();
@@ -418,10 +421,11 @@ void handleAuthorizedRequest(WiFiClient &cl)
     {
         const char *result = nullptr;
         char value[MAX_VALUE_LENGTH];
-
+        // on change system request
         if ((result = strstr(HTTP_req, "system=")) != NULL)
         {
             parseRequest(result, ' ', value);
+            // on change channel request
             if (strstr(value, "&") != NULL)
             {
                 parseRequest(result, '&', value);
@@ -439,16 +443,19 @@ void handleAuthorizedRequest(WiFiClient &cl)
                 }
             }
         }
+        // On relay btn press
         else if ((result = strstr(HTTP_req, "relay=")) != NULL)
         {
             parseRequest(result, ' ', value);
             relayControl(atoi(value));
         }
+        // On simulated hardware switch btn press
         else if ((result = strstr(HTTP_req, "switch=")) != NULL)
         {
             parseRequest(result, ' ', value);
             switcher(atoi(value));
         }
+        // On simulated channel on off btn press
         if ((result = strstr(HTTP_req, "channel=")) != NULL)
         {
             parseRequest(result, ' ', value);
@@ -496,6 +503,7 @@ void showWebPage(void)
                     handleAuthorizedRequest(webClient);
                 else
                 {
+                    /*************If not authorized*************/
                     webClient.println(F("HTTP/1.1 401 Unauthorized"));
                     webClient.println(F("WWW-Authenticate: Basic realm='Secure'"));
                     webClient.println(F("Content-Type: text/html"));
