@@ -14,7 +14,7 @@ text-align: left;
 
 table {
 border-collapse: collapse;
-margin: 0 auto;
+width: 40%;
 border: 2px solid #ccc;
 }
 
@@ -90,6 +90,7 @@ justify-content: center;
 }
 
 .transposed-table {
+text-align: center;
 writing-mode: vertical-lr;
 }
 
