@@ -282,7 +282,7 @@ void sendWebContent(WiFiClient &cl)
         cl.print(sum);
         cl.print(F("<br></b>"));
 
-        cl.print("<table class='transposed-table'><tr>"
+        cl.print("<div class='transposed-table-container'><table class='transposed-table'><tr>"
                  "<br><th>System Index</th><th>Type</th><th>Short Alias</th>");
         debugln("MAXCHAN=" + String(maxChannelSize));
         for (uint16_t i = 0; i < maxChannelSize; i++)
@@ -320,7 +320,7 @@ void sendWebContent(WiFiClient &cl)
             }
             cl.print(F("</tr>"));
         }
-        cl.print(F("</table>"));
+        cl.print(F("</table></div>"));
     }
 
     /*************************************** Show ESP32 Chip Parameter ****************************/

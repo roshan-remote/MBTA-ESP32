@@ -14,9 +14,8 @@ text-align: left;
 
 table {
 border-collapse: collapse;
-width: 50%;
-border: 2px solid #ccc;
 margin: 0 auto;
+border: 2px solid #ccc;
 }
 
 th,
@@ -85,9 +84,13 @@ background-color: red;
 background-color: green;
 }
 
+.transposed-table-container {
+display: flex;
+justify-content: center;
+}
+
 .transposed-table {
 writing-mode: vertical-lr;
-margin: 0 auto;
 }
 
 .transposed-table th, .transposed-table td {
