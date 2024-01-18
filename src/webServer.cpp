@@ -127,7 +127,9 @@ void GetAjaxData(WiFiClient &cl)
 
     sprintf(ajaxBuffer,
             "<b><center><h2>Run<span id='red'>Time </span> %lu seconds</h2></center></b>"
-            "<h3><center><span id='green'>Radio Parameters</span></center></h3>"
+
+
+            "<h3><center>XL-LINK<span id='red'>Monitor</span></span></center></h3>"
             "<center><table border='2'>"
             "<tr><th>SN</th><th>Params</th><th>Count</th></tr>"
             "<tr><td>1</td><td>ACKs</td><td>%u</td></tr>"
@@ -136,7 +138,9 @@ void GetAjaxData(WiFiClient &cl)
             "<tr><td>4</td><td>RX KeepAlives</td><td>%u</td></tr>"
             "<tr><td>5</td><td>Radio-Server Conn</td><td>%u</td></tr>"
             "</center></table>"
-            "<br><h3><span id='green'><center>Heap Parameters</center></span></h3>"
+
+            "<br><h3><center>Heap<span id='red'>Monitor</span></span></center></h3>"
+      //      "<br><h3><span id='green'><center>Heap Parameters</center></span></h3>"
             "<center><table border='2'>"
             "<tr><th>SN</th><th>Params</th><th>Size (KB)</th></tr>"
             "<tr><td>1</td><td> <span id='red'>Available Heap</span></td><td>%lf</td></tr>"
@@ -248,6 +252,7 @@ void sendWebContent(WiFiClient &cl)
     }
     cl.print(F("<br><br><br></h3><hr>"));
 
+//*******************************************************************************************
     cl.println(F("<body onload='initPage()'>"));
     cl.print(F("<center>"));
     cl.print(F("<h3>Firmware<span id='red'>Version</span> "));
@@ -256,30 +261,7 @@ void sendWebContent(WiFiClient &cl)
     cl.print(resetCount);
     cl.println(F("</h3><hr>"));
 
-    cl.println(F("<h3><span id='green'>Chip Parameters</span></h3><table border='2'>"));
-    cl.print(F("<tr><th>SN</th><th>Params</th><th>Value</th></tr>"));
-    cl.print(F("<tr><td>1</td><td>Flash Size</td><td>"));
-    cl.print((ESP.getFlashChipSize() / 1024.0) / 1024.0);
-    cl.println(F("MB</td></tr>"));
-    cl.print(F("<tr><td>2</td><td>Flash Speed</td><td>"));
-    cl.print(ESP.getFlashChipSpeed() / 1000000);
-    cl.println(F("MHz</td></tr>"));
-    cl.print(F("<tr><td>3</td><td>Sketch Size</td><td>"));
-    cl.print((ESP.getSketchSize() / 1024.0) / 1024.0);
-    cl.println(F("MB</td></tr>"));
-    cl.print(F("<tr><td>4</td><td>Free Sketch Size</td><td>"));
-    cl.print((ESP.getFreeSketchSpace() / 1024.0) / 1024.0);
-    cl.println(F("MB</td></tr>"));
-    cl.print(F("<tr><td>5</td><td>CPU Frequency</td><td>"));
-    cl.print(ESP.getCpuFreqMHz());
-    cl.println(F("MHz</td></tr>"));
-    cl.print(F("<tr><td>6</td><td>Chip Model</td><td>"));
-    cl.print(ESP.getChipModel());
-    cl.println(F("</td></tr>"));
-    cl.print(F("<tr><td>7</td><td>SDK version</td><td>"));
-    cl.print(ESP.getSdkVersion());
-    cl.println(F("</td></tr></table><br>"));
-
+//*******************************************************************************************
     if (completeSysList == false)
     {
         cl.println(F("<div id='systemTable'></div>"));
@@ -339,6 +321,35 @@ void sendWebContent(WiFiClient &cl)
         }
         cl.print(F("</table>"));
     }
+
+    //*******************************************************************************************
+
+    
+    cl.println(F("<h3>Build<span id='red'>Paramters</span></span></h3><table border='2'>"));
+    cl.print(F("<tr><th>SN</th><th>Params</th><th>Value</th></tr>"));
+    cl.print(F("<tr><td>1</td><td>Flash Size</td><td>"));
+    cl.print((ESP.getFlashChipSize() / 1024.0) / 1024.0);
+    cl.println(F("MB</td></tr>"));
+    cl.print(F("<tr><td>2</td><td>Flash Speed</td><td>"));
+    cl.print(ESP.getFlashChipSpeed() / 1000000);
+    cl.println(F("MHz</td></tr>"));
+    cl.print(F("<tr><td>3</td><td>Sketch Size</td><td>"));
+    cl.print((ESP.getSketchSize() / 1024.0) / 1024.0);
+    cl.println(F("MB</td></tr>"));
+    cl.print(F("<tr><td>4</td><td>Free Sketch Size</td><td>"));
+    cl.print((ESP.getFreeSketchSpace() / 1024.0) / 1024.0);
+    cl.println(F("MB</td></tr>"));
+    cl.print(F("<tr><td>5</td><td>CPU Frequency</td><td>"));
+    cl.print(ESP.getCpuFreqMHz());
+    cl.println(F("MHz</td></tr>"));
+    cl.print(F("<tr><td>6</td><td>Chip Model</td><td>"));
+    cl.print(ESP.getChipModel());
+    cl.println(F("</td></tr>"));
+    cl.print(F("<tr><td>7</td><td>SDK version</td><td>"));
+    cl.print(ESP.getSdkVersion());
+    cl.println(F("</td></tr></table><br>"));
+//*******************************************************************************************
+
 
     cl.println(F("<div id='sw_an_data'></div>"));
 
