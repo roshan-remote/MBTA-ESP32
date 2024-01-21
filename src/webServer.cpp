@@ -105,7 +105,7 @@ void parseRequest(const char *request, char delimiter, char *result)
 
 void showSystemReport(WiFiClient &cl)
 {
-    cl.print(" <div class='spinner-2'>Loading...</div>");
+    cl.print(" <div class='spinner-2'>Loading Radio Mission...</div>");
 }
 
 /********************************* Logging data to the browser *********************************/
@@ -122,12 +122,9 @@ void logger(WiFiClient &cl)
 /*********************************Update Parameters in Web page *********************************/
 void GetAjaxData(WiFiClient &cl)
 {
-
     char ajaxBuffer[4092];
-
     sprintf(ajaxBuffer,
             "<b><center><h2>Run<span id='red'>Time </span> %lu seconds</h2></center></b>"
-
             "<h3><center>XL-LINK<span id='red'>Monitor</span></span></center></h3>"
             "<center><table border='2'>"
             "<tr><th>SN</th><th>Params</th><th>Count</th></tr>"
@@ -137,7 +134,6 @@ void GetAjaxData(WiFiClient &cl)
             "<tr><td>4</td><td>RX KeepAlives</td><td>%u</td></tr>"
             "<tr><td>5</td><td>Radio-Server Conn</td><td>%u</td></tr>"
             "</center></table>"
-
             "<br><h3><center>Heap<span id='red'>Monitor</span></span></center></h3>"
             "<center><table border='2'>"
             "<tr><th>SN</th><th>Params</th><th>Size (KB)</th></tr>"
@@ -163,7 +159,7 @@ void GetAjaxData(WiFiClient &cl)
                "<tr><th>SN</th><th>Task</th><th>Task ID</th>"
                "<th>Address</th><th>State</th><th>Priority</th>"
                "<th>Free Stack</th><th>Runtime Count</th></tr>");
-
+        // show the task status information
         for (uint8_t i = 0; i < taskCount; i++)
         {
             sprintf(ajaxBuffer + strlen(ajaxBuffer),
@@ -209,7 +205,7 @@ void sendWebContent(WiFiClient &cl)
 
     cl.println(F("<body><div class='header'>"));
 
-    /*********************************Show Hardware Simulated Buttons *********************************/
+    /*********************************Show  Header logos *********************************/
     cl.println(F("<img src="));
     cl.write(MBTA_LOGO);
     cl.println(F(">"));
@@ -218,6 +214,8 @@ void sendWebContent(WiFiClient &cl)
     cl.println(F("<img src="));
     cl.write(L3H_LOGO);
     cl.println(F("></div>"));
+
+    /*********************************Show Hardware Simulated Buttons ********************************/
     cl.println(F("<img align='right' class='mirrored' id='switch=2' src="));
     cl.write(SWITCH_2);
     cl.println(F(">"));
@@ -293,24 +291,24 @@ void sendWebContent(WiFiClient &cl)
         }
         cl.print("</tr>");
 
+        /******** Show System Buttons ********/
         for (uint16_t i = 0; i < systemInfoSize; i++)
         {
             cl.print(F("<tr><td>"));
             cl.print(systemInfo[i].systemIndex);
             cl.print(F("</td><td>"));
             cl.print(systemInfo[i].systemType);
-
             cl.print(F("</td><td><button class='custom-button' id='system="));
             cl.print(systemInfo[i].shortAlias);
             cl.print(F("'>"));
             cl.print(systemInfo[i].shortAlias);
             cl.print(F("</button></td>"));
 
+            /***** Show Channels Buttons *****/
             for (uint16_t j = 0; j < systemInfo[i].channelSize; j++) // This is for the channels data
             {
                 // debugln(systemInfo[i].channels[j]);
-                cl.print(F("<td>"
-                           "<button  class='custom-button' id='system="));
+                cl.print(F("<td><button  class='custom-button' id='system="));
                 cl.print(systemInfo[i].shortAlias);
                 cl.print(F("&channel="));
                 cl.print(j + 1);
@@ -324,7 +322,7 @@ void sendWebContent(WiFiClient &cl)
     }
 
     /*************************************** Show ESP32 Chip Parameter ****************************/
-    cl.println(F("<h3>Build<span id='red'>Paramters</span></span></h3><table border='2'>"));
+    cl.println(F("<h3>Build<span id='red'>Parameters</span></span></h3><table border='2'>"));
     cl.print(F("<tr><th>SN</th><th>Params</th><th>Value</th></tr>"));
     cl.print(F("<tr><td>1</td><td>Flash Size</td><td>"));
     cl.print((ESP.getFlashChipSize() / 1024.0) / 1024.0);
