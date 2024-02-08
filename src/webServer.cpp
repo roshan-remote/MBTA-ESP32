@@ -19,6 +19,14 @@
 #include "web/webPageStatic.h"
 #include "fileHandle.h"
 
+extern char currentSystem[32];
+extern char currentChannel[32];
+extern uint16_t sysChannel;
+
+extern uint16_t voiceCallSourceID;
+extern uint16_t voiceCallTargetID;
+extern bool speakerUnmuted;
+
 #ifdef SERVE_WIFI
 #include <WiFi.h>
 #endif
@@ -123,7 +131,22 @@ void logger(WiFiClient &cl)
 void GetAjaxData(WiFiClient &cl)
 {
     char ajaxBuffer[4092];
+
     sprintf(ajaxBuffer,
+            "<br><b>Current<span id='green'>System</span> %s</b>"
+            "<br><b>Current<span id='green'>Channel</span> %s</b><br>",
+            currentSystem,
+            currentChannel);
+
+    if (speakerUnmuted)
+    {
+        cl.print("<br><b>Source-ID:");
+        cl.println(voiceCallSourceID);
+        cl.print("<br>Target-ID:");
+        cl.println(voiceCallTargetID);
+        cl.print("</b>");
+    }
+    sprintf(ajaxBuffer + strlen(ajaxBuffer),
             "<b><center><h2>Run<span id='red'>Time </span> %lu seconds</h2></center></b>"
             "<h3><center>XL-LINK<span id='red'>Monitor</span></span></center></h3>"
             "<center><table border='2'>"

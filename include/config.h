@@ -107,4 +107,11 @@ enum
     SYS_LIST
 };
 
+enum
+{
+    UNSUBSCRIBE,
+    SUBSCRIPTION,
+    ONE_TIME_REQUEST
+};
+
 #endif

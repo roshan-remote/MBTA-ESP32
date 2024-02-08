@@ -74,6 +74,9 @@ void switchStates(int responseCode)
   case VCH_OK:
     state = LISTEN;
     pauseKeepAlive = false;
+    requestForVoiceCallEvent(SUBSCRIPTION);
+    delay(RADIO_CMDS_DELAY);
+    channelGroupChangeEventRequest(SUBSCRIPTION);
     break;
 
   case LISTEN:

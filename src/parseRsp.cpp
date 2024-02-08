@@ -10,6 +10,13 @@ bool radioAck = false;
 
 int systemInfoCounter = 0;
 
+char currentSystem[32];
+char currentChannel[32];
+
+uint16_t voiceCallSourceID = 0;
+uint16_t voiceCallTargetID = 0;
+bool speakerUnmuted = false;
+
 // Parse a JSON response from XL -200l
 int parseResponse(JsonDocument &rriJsonRsp)
 {
@@ -91,6 +98,30 @@ int parseResponse(JsonDocument &rriJsonRsp)
                 return SYS_LIST;
             }
             return RADIO_ACK;
+        }
+        else if (strcmp(rriJsonRsp["method"], "channelGroupChangeEventReport") == 0)
+        {
+            debugln("[Channel Group change Report::]");
+            if (rriJsonRsp["params"] != 0)
+            {
+                strcpy(currentSystem, rriJsonRsp["params"]["System Name"]);
+                if (rriJsonRsp["params"]["Channel Name"] != "")
+                    strcpy(currentChannel, rriJsonRsp["params"]["Channel Name"]);
+                else
+                    strcpy(currentChannel, rriJsonRsp["params"]["Group Name"]);
+            }
+            return LISTEN;
+        }
+        else if (strcmp(rriJsonRsp["method"], "reportForVoiceCallEvents") == 0)
+        {
+            debugln("[Voice call Report::]");
+            if (rriJsonRsp["params"] != 0)
+            {
+                speakerUnmuted = rriJsonRsp["params"]["Speaker Unmuted"];
+                voiceCallSourceID = rriJsonRsp["params"]["Source ID"];
+                voiceCallTargetID = rriJsonRsp["params"]["Target ID"];
+            }
+            return LISTEN;
         }
         else if (strcmp(rriJsonRsp["method"], "radioNegativeAcknowledge") == 0)
         {

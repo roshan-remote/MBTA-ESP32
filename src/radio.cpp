@@ -92,3 +92,17 @@ bool requestForConventionalFrequencySet(const char *systemName)
     rriJson["params"]["System Name"] = systemName;
     return (sendTCPMsg(rriJson));
 }
+
+bool requestForVoiceCallEvent(uint8_t subscription)
+{
+    configJsonReq("RRIControlService", "requestForVoiceCallEvent");
+    rriJson["params"]["subscription"] = subscription;
+    return (sendTCPMsg(rriJson));
+}
+
+bool channelGroupChangeEventRequest(uint8_t subscription)
+{
+    configJsonReq("RRIControlService", "channelGroupChangeEventRequest");
+    rriJson["params"]["subscription"] = subscription;
+    return (sendTCPMsg(rriJson));
+}
